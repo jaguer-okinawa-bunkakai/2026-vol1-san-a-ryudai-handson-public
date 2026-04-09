@@ -407,10 +407,15 @@
       font-size: clamp(1rem, 2.5vw, 2rem);
       font-weight: 900;
       color: var(--deep-sea);
-      margin-bottom: 4%;
+      margin-bottom: 3%;
+    }
+    .slide-findings .findings-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4%;
     }
     .slide-findings .findings-list {
-      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 3%;
@@ -440,6 +445,31 @@
       color: #64748B;
       margin-top: 2px;
     }
+    .slide-findings .findings-images {
+      display: flex;
+      flex-direction: column;
+      gap: 3%;
+    }
+    .slide-findings .findings-images img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      object-fit: contain;
+      max-height: 100%;
+    }
+    .slide-findings .findings-images .no-image {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #CBD5E1;
+      border-radius: 8px;
+      color: #94A3B8;
+      font-size: clamp(0.5rem, 0.9vw, 0.78rem);
+      text-align: center;
+      padding: 4%;
+      min-height: 60px;
+    }
     .slide-findings .footer-line {
       margin-top: auto;
       padding-top: 2%;
@@ -449,6 +479,72 @@
       display: flex;
       justify-content: space-between;
     }
+
+    /* Image upload UI in editor */
+    .image-upload-area {
+      border: 2px dashed #CBD5E1;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-top: 6px;
+      position: relative;
+    }
+    .image-upload-area:hover, .image-upload-area.dragover {
+      border-color: var(--ocean);
+      background: #F0F7FF;
+    }
+    .image-upload-area .upload-hint {
+      font-size: 0.75rem;
+      color: #94A3B8;
+    }
+    .image-upload-area .upload-hint strong {
+      color: var(--ocean);
+    }
+    .image-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .image-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .image-preview-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #E2E8F0;
+      aspect-ratio: 16/9;
+      background: #F8FAFC;
+    }
+    .image-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .image-preview-item .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .image-preview-item .remove-btn:hover { background: var(--coral); }
 
     /* Slide 5: Insight */
     .slide-insight {
@@ -700,6 +796,16 @@
       <input type="text" id="finding2" placeholder="例: 旧盆前日の買い出しが最も多い" oninput="updateSlides()">
       <label>発見 3</label>
       <input type="text" id="finding3" placeholder="例: 旧盆明けの9/7は売上が急落（4.2億円）" oninput="updateSlides()">
+
+      <label style="margin-top:14px;">グラフ・スクリーンショット（最大3枚）</label>
+      <div class="image-upload-area" id="imageUploadArea">
+        <input type="file" accept="image/*" multiple onchange="handleFileSelect(event)">
+        <p class="upload-hint">
+          <strong>クリックしてファイルを選択</strong><br>
+          またはドラッグ&ドロップ / クリップボードから貼り付け（Ctrl+V）
+        </p>
+      </div>
+      <div class="image-preview-grid" id="imagePreviewGrid"></div>
     </div>
 
     <div class="form-section">
@@ -743,6 +849,103 @@
 <script>
   let currentSlide = 0;
   const totalSlides = 6;
+  let uploadedImages = []; // Array of base64 data URLs (max 3)
+
+  // === Image handling ===
+  function handleFileSelect(event) {
+    var files = event.target.files;
+    for (var i = 0; i < files.length; i++) {
+      if (uploadedImages.length >= 3) break;
+      processImageFile(files[i]);
+    }
+    event.target.value = '';
+  }
+
+  function processImageFile(file) {
+    if (!file.type.startsWith('image/')) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      // Resize to max 800px width to keep data manageable
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var maxW = 800;
+        var w = img.width, h = img.height;
+        if (w > maxW) { h = h * maxW / w; w = maxW; }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        if (uploadedImages.length < 3) {
+          uploadedImages.push(dataUrl);
+          renderImagePreviews();
+          updateSlides();
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeImage(index) {
+    uploadedImages.splice(index, 1);
+    renderImagePreviews();
+    updateSlides();
+  }
+
+  function renderImagePreviews() {
+    var grid = document.getElementById('imagePreviewGrid');
+    grid.innerHTML = uploadedImages.map(function(src, i) {
+      return '<div class="image-preview-item">' +
+        '<img src="' + src + '" alt="画像 ' + (i+1) + '">' +
+        '<button class="remove-btn" onclick="removeImage(' + i + ')">&times;</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  function getImagesHtml() {
+    if (uploadedImages.length === 0) {
+      return '<div class="no-image">グラフ・スクリーンショットを<br>エディタから追加してください</div>';
+    }
+    return uploadedImages.map(function(src, i) {
+      return '<img src="' + src + '" alt="可視化 ' + (i+1) + '">';
+    }).join('');
+  }
+
+  // Drag & drop
+  (function() {
+    var area = document.getElementById('imageUploadArea');
+    if (!area) return;
+    ['dragenter','dragover'].forEach(function(ev) {
+      area.addEventListener(ev, function(e) { e.preventDefault(); area.classList.add('dragover'); });
+    });
+    ['dragleave','drop'].forEach(function(ev) {
+      area.addEventListener(ev, function(e) { e.preventDefault(); area.classList.remove('dragover'); });
+    });
+    area.addEventListener('drop', function(e) {
+      var files = e.dataTransfer.files;
+      for (var i = 0; i < files.length; i++) {
+        if (uploadedImages.length >= 3) break;
+        processImageFile(files[i]);
+      }
+    });
+  })();
+
+  // Clipboard paste (Ctrl+V anywhere)
+  document.addEventListener('paste', function(e) {
+    var items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        e.preventDefault();
+        var file = items[i].getAsFile();
+        if (file && uploadedImages.length < 3) {
+          processImageFile(file);
+        }
+        break;
+      }
+    }
+  });
 
   // Team themes
   const teamThemes = {
@@ -828,10 +1031,13 @@
       '<div class="slide slide-findings' + (currentSlide === 3 ? ' active' : '') + '">' +
         '<div class="label">FINDINGS</div>' +
         '<div class="title">発見したこと</div>' +
-        '<div class="findings-list">' +
-          '<div class="finding"><span class="finding-icon">&#128161;</span><div class="finding-content"><h4>発見 1</h4><p>' + escapeHtml(v.finding1) + '</p></div></div>' +
-          '<div class="finding"><span class="finding-icon">&#128200;</span><div class="finding-content"><h4>発見 2</h4><p>' + escapeHtml(v.finding2) + '</p></div></div>' +
-          '<div class="finding"><span class="finding-icon">&#128269;</span><div class="finding-content"><h4>発見 3</h4><p>' + escapeHtml(v.finding3) + '</p></div></div>' +
+        '<div class="findings-body">' +
+          '<div class="findings-list">' +
+            '<div class="finding"><span class="finding-icon">&#128161;</span><div class="finding-content"><h4>発見 1</h4><p>' + escapeHtml(v.finding1) + '</p></div></div>' +
+            '<div class="finding"><span class="finding-icon">&#128200;</span><div class="finding-content"><h4>発見 2</h4><p>' + escapeHtml(v.finding2) + '</p></div></div>' +
+            '<div class="finding"><span class="finding-icon">&#128269;</span><div class="finding-content"><h4>発見 3</h4><p>' + escapeHtml(v.finding3) + '</p></div></div>' +
+          '</div>' +
+          '<div class="findings-images">' + getImagesHtml() + '</div>' +
         '</div>' +
         '<div class="footer-line"><span>データで考える、沖縄の「ちょうどいい」と「もっといい」</span><span>4</span></div>' +
       '</div>',
@@ -909,8 +1115,9 @@
   // LocalStorage
   function saveToLocalStorage() {
     var v = getValues();
+    v.images = uploadedImages;
     localStorage.setItem('slideBuilder_' + v.teamName, JSON.stringify(v));
-    alert(v.teamName + ' のデータを保存しました');
+    alert(v.teamName + ' のデータを保存しました（画像含む）');
   }
   function loadFromLocalStorage() {
     var team = document.getElementById('teamName').value;
@@ -930,6 +1137,10 @@
     document.getElementById('insights').value = v.insights || '';
     document.getElementById('proposal').value = v.proposal || '';
     document.getElementById('remaining').value = v.remaining || '';
+    if (v.images && Array.isArray(v.images)) {
+      uploadedImages = v.images;
+      renderImagePreviews();
+    }
     updateSlides();
   }
 
