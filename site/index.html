@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>データで考える、沖縄の「ちょうどいい」と「もっといい」 - Jagu'e'r 沖縄分科会 ハンズオン</title>
-  <meta name="description" content="2026/04/11 Jagu'e'r 沖縄分科会 × サンエー × 琉球大学 特別コラボハンズオン。サンエーの実PosデータをBigQuery・Geminiで分析する体験型ワークショップ。">
+  <meta name="description" content="2026/04/11 Jagu'e'r 沖縄分科会 × サンエー × 琉球大学 特別コラボハンズオン。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -28,12 +27,7 @@
       --ocean-pale: #90E0EF;
       --deep-sea: #023E8A;
       --coral: #E63946;
-      --sunset: #F4A261;
-      --tropical-green: #2A9D8F;
-      --sand: #F5F0E8;
-      --cloud: #FAFCFF;
       --charcoal: #2D3748;
-      --indigo: #1B3A5C;
     }
 
     /* Header */
@@ -44,11 +38,11 @@
     }
     .header-inner {
       max-width: 1200px; margin: 0 auto; padding: 0 24px;
-      display: flex; align-items: center; justify-content: space-between; height: 60px;
+      display: flex; align-items: center; justify-content: space-between; height: 56px;
     }
     .header-logo {
-      font-weight: 700; font-size: 0.95rem; color: #fff;
-      display: flex; align-items: center; gap: 10px; text-decoration: none;
+      font-weight: 700; font-size: 0.9rem; color: #fff;
+      text-decoration: none;
     }
     .header-logo:hover { text-decoration: none; }
     .nav-links {
@@ -65,237 +59,86 @@
     }
     .hamburger span { width: 22px; height: 2px; background: #fff; transition: 0.3s; }
 
-    /* Hero */
+    /* Hero - compact */
     .hero {
-      min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center;
-      background: linear-gradient(160deg, var(--deep-sea) 0%, var(--ocean) 40%, var(--ocean-light) 80%);
-      padding: 120px 24px 80px;
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      background: linear-gradient(160deg, var(--deep-sea) 0%, var(--ocean) 50%, var(--ocean-light) 100%);
+      padding: 90px 24px 40px;
     }
     .hero h1 {
-      font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 900; color: #fff;
-      margin-bottom: 12px; letter-spacing: 0.02em;
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 900; color: #fff;
+      margin-bottom: 8px;
     }
     .hero h1 .accent { color: var(--ocean-pale); }
     .hero .subtitle {
-      font-size: clamp(0.9rem, 2vw, 1.15rem); color: rgba(255,255,255,0.85);
-      font-weight: 400; margin-bottom: 16px;
+      font-size: clamp(0.8rem, 1.5vw, 0.95rem); color: rgba(255,255,255,0.8);
+      margin-bottom: 12px;
     }
     .hero .meta-info {
-      display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
-      margin-bottom: 32px;
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+      margin-bottom: 16px;
     }
     .hero .meta-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 100px; padding: 6px 18px; font-size: 0.82rem;
-      color: rgba(255,255,255,0.95); backdrop-filter: blur(4px);
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px; padding: 4px 14px; font-size: 0.75rem;
+      color: rgba(255,255,255,0.9);
     }
-    .hero-cta {
-      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 20px;
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 28px; border-radius: 100px; font-size: 0.88rem;
-      font-weight: 700; cursor: pointer; transition: all 0.3s; border: none; text-decoration: none;
-    }
-    .btn:hover { text-decoration: none; }
-    .btn-primary { background: #fff; color: var(--deep-sea); }
-    .btn-primary:hover { background: var(--ocean-pale); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.4); }
-    .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.1); transform: translateY(-2px); }
 
     /* Section */
-    .section { padding: 80px 24px; }
+    .section { padding: 60px 24px; }
     .section:nth-child(even) { background: #F0F7FF; }
-    .section-inner { max-width: 1000px; margin: 0 auto; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
     .section-label {
-      display: inline-block; font-size: 0.72rem; font-weight: 700;
-      color: var(--ocean); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px;
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      color: var(--ocean); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 4px;
     }
     .section-title {
-      font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900;
-      color: var(--deep-sea); margin-bottom: 12px;
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem); font-weight: 900;
+      color: var(--deep-sea); margin-bottom: 10px;
     }
     .section-desc {
-      font-size: 0.95rem; color: #64748B; max-width: 640px; margin-bottom: 36px;
+      font-size: 0.9rem; color: #64748B; max-width: 640px; margin-bottom: 24px;
     }
 
     /* Cards */
     .card-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px; margin-top: 24px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
     }
     .card {
-      background: #fff; border-radius: 16px; padding: 28px; border: 1px solid #E2E8F0;
+      background: #fff; border-radius: 14px; padding: 24px; border: 1px solid #E2E8F0;
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-    .card-icon { font-size: 2rem; margin-bottom: 12px; }
-    .card h3 { font-size: 1.05rem; font-weight: 700; color: var(--deep-sea); margin-bottom: 8px; }
-    .card p { font-size: 0.88rem; color: #64748B; line-height: 1.7; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+    .card-icon { font-size: 1.6rem; margin-bottom: 8px; }
+    .card h3 { font-size: 0.95rem; font-weight: 700; color: var(--deep-sea); margin-bottom: 6px; }
+    .card p { font-size: 0.82rem; color: #64748B; line-height: 1.6; }
 
-    /* Table */
-    table {
-      width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem;
-      background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0;
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 24px; border-radius: 100px; font-size: 0.85rem;
+      font-weight: 700; cursor: pointer; transition: all 0.3s; border: none; text-decoration: none;
     }
-    th {
-      background: var(--deep-sea); color: #fff; padding: 12px 16px; text-align: left;
-      font-weight: 600; font-size: 0.82rem;
-    }
-    td { padding: 10px 16px; border-bottom: 1px solid #F1F5F9; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #F8FAFC; }
-
-    /* Timeline */
-    .timeline { list-style: none; position: relative; padding-left: 32px; }
-    .timeline::before {
-      content: ''; position: absolute; left: 11px; top: 8px; bottom: 8px;
-      width: 3px; background: linear-gradient(to bottom, var(--ocean), var(--ocean-pale));
-      border-radius: 2px;
-    }
-    .timeline li {
-      position: relative; margin-bottom: 24px; padding-left: 20px;
-    }
-    .timeline li::before {
-      content: ''; position: absolute; left: -25px; top: 8px;
-      width: 14px; height: 14px; border-radius: 50%;
-      background: var(--ocean); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ocean);
-    }
-    .timeline .time {
-      font-size: 0.78rem; font-weight: 700; color: var(--ocean);
-      display: block; margin-bottom: 2px;
-    }
-    .timeline .event-title {
-      font-size: 1rem; font-weight: 700; color: var(--charcoal);
-    }
-    .timeline .event-desc {
-      font-size: 0.85rem; color: #64748B; margin-top: 2px;
-    }
-
-    /* Step boxes */
-    .step-box {
-      background: #fff; border-radius: 16px; padding: 32px;
-      border: 1px solid #E2E8F0; margin-bottom: 28px;
-    }
-    .step-box h3 {
-      font-size: 1.15rem; font-weight: 800; color: var(--deep-sea);
-      margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
-    }
-    .step-number {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: 50%;
-      background: var(--ocean); color: #fff; font-size: 0.85rem; font-weight: 800;
-      flex-shrink: 0;
-    }
-    .step-box p, .step-box ul { font-size: 0.9rem; color: #475569; line-height: 1.8; }
-    .step-box ul { padding-left: 20px; margin-top: 8px; }
-    .step-box li { margin-bottom: 4px; }
-
-    /* Code */
-    pre {
-      background: #1E293B; color: #E2E8F0; padding: 20px; border-radius: 12px;
-      overflow-x: auto; font-size: 0.82rem; line-height: 1.7; margin: 16px 0;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-    code {
-      background: #F1F5F9; color: var(--coral); padding: 2px 6px; border-radius: 4px;
-      font-size: 0.85em; font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-    pre code { background: none; color: inherit; padding: 0; }
-
-    /* Checklist */
-    .checklist { list-style: none; padding: 0; }
-    .checklist li {
-      padding: 10px 0; border-bottom: 1px solid #F1F5F9;
-      font-size: 0.9rem; display: flex; align-items: flex-start; gap: 10px;
-    }
-    .checklist li::before {
-      content: ''; display: inline-block; width: 20px; height: 20px;
-      border: 2px solid var(--ocean); border-radius: 4px; flex-shrink: 0; margin-top: 2px;
-    }
-
-    /* Architecture diagram */
-    .arch-diagram {
-      background: #fff; border-radius: 16px; padding: 32px;
-      border: 1px solid #E2E8F0; margin: 24px 0; overflow-x: auto;
-    }
-    .mermaid { text-align: center; }
-
-    /* Security layers */
-    .security-layers { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
-    .security-layer {
-      display: flex; align-items: center; gap: 16px;
-      padding: 16px 20px; border-radius: 12px; border-left: 4px solid;
-    }
-    .security-layer .layer-num {
-      width: 36px; height: 36px; border-radius: 50%; display: flex;
-      align-items: center; justify-content: center;
-      font-weight: 800; font-size: 0.85rem; color: #fff; flex-shrink: 0;
-    }
-    .security-layer h4 { font-size: 0.92rem; font-weight: 700; }
-    .security-layer p { font-size: 0.82rem; color: #64748B; }
-    .sl-1 { background: #FFF5F5; border-color: #E53E3E; }
-    .sl-1 .layer-num { background: #E53E3E; }
-    .sl-2 { background: #FFFAF0; border-color: #DD6B20; }
-    .sl-2 .layer-num { background: #DD6B20; }
-    .sl-3 { background: #FFFFF0; border-color: #D69E2E; }
-    .sl-3 .layer-num { background: #D69E2E; }
-    .sl-4 { background: #F0FFF4; border-color: #38A169; }
-    .sl-4 .layer-num { background: #38A169; }
-    .sl-5 { background: #EBF8FF; border-color: #3182CE; }
-    .sl-5 .layer-num { background: #3182CE; }
-
-    /* FAQ */
-    .faq-item {
-      background: #fff; border-radius: 12px; padding: 20px 24px;
-      border: 1px solid #E2E8F0; margin-bottom: 12px;
-    }
-    .faq-q {
-      font-size: 0.92rem; font-weight: 700; color: var(--deep-sea);
-      margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px;
-    }
-    .faq-q::before { content: 'Q.'; color: var(--ocean); font-weight: 800; flex-shrink: 0; }
-    .faq-a { font-size: 0.88rem; color: #475569; padding-left: 28px; }
-
-    /* Data model */
-    .data-table-info {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px; margin: 20px 0;
-    }
-    .data-table-card {
-      background: #fff; border-radius: 12px; padding: 20px;
-      border: 1px solid #E2E8F0;
-    }
-    .data-table-card h4 {
-      font-size: 0.95rem; font-weight: 700; color: var(--deep-sea); margin-bottom: 6px;
-    }
-    .data-table-card .badge {
-      display: inline-block; font-size: 0.72rem; font-weight: 700;
-      padding: 2px 10px; border-radius: 100px; margin-bottom: 8px;
-    }
-    .badge-main { background: #FED7D7; color: #C53030; }
-    .badge-ref { background: #E9D8FD; color: #6B46C1; }
-    .badge-perf { background: #BEE3F8; color: #2B6CB0; }
-    .data-table-card p { font-size: 0.82rem; color: #64748B; }
-
-    /* Anonymization table */
-    .anon-safe { color: #38A169; font-weight: 700; }
-    .anon-removed { color: #E53E3E; font-weight: 700; }
-    .anon-hash { color: #D69E2E; font-weight: 700; }
+    .btn:hover { text-decoration: none; }
+    .btn-primary { background: var(--ocean); color: #fff; }
+    .btn-primary:hover { background: var(--deep-sea); transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: #475569; border: 2px solid #E2E8F0; }
+    .btn-outline:hover { border-color: var(--ocean); color: var(--ocean); }
 
     /* Footer */
     .footer {
-      background: var(--deep-sea); color: rgba(255,255,255,0.7);
-      padding: 40px 24px; text-align: center; font-size: 0.82rem;
+      background: var(--deep-sea); color: rgba(255,255,255,0.6);
+      padding: 32px 24px; text-align: center; font-size: 0.78rem;
     }
     .footer a { color: var(--ocean-pale); }
 
     /* Scroll to top */
     .scroll-top {
-      position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px;
+      position: fixed; bottom: 20px; right: 20px; width: 40px; height: 40px;
       border-radius: 50%; background: var(--ocean); color: #fff; border: none;
-      font-size: 1.2rem; cursor: pointer; opacity: 0; transition: opacity 0.3s;
+      font-size: 1.1rem; cursor: pointer; opacity: 0; transition: opacity 0.3s;
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
@@ -303,14 +146,11 @@
 
     /* Responsive */
     @media (max-width: 768px) {
-      .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: rgba(2,62,138,0.98); padding: 16px 24px; gap: 16px; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 56px; left: 0; right: 0; background: rgba(2,62,138,0.98); padding: 16px 24px; gap: 16px; }
       .nav-links.open { display: flex; }
       .hamburger { display: flex; }
-      .hero { min-height: 60vh; padding: 100px 20px 60px; }
-      .section { padding: 60px 16px; }
-      .step-box { padding: 20px; }
-      pre { padding: 14px; font-size: 0.75rem; }
-      .security-layer { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .hero { padding: 80px 16px 32px; }
+      .section { padding: 40px 16px; }
     }
   </style>
 </head>
@@ -319,18 +159,12 @@
   <!-- Header -->
   <header class="header">
     <div class="header-inner">
-      <a href="#hero" class="header-logo">Jagu'e'r 沖縄 | ハンズオン 2026</a>
+      <a href="#" class="header-logo">Jagu'e'r 沖縄 | ハンズオン 2026</a>
       <nav>
         <ul class="nav-links" id="navLinks">
-          <li><a href="#overview">概要</a></li>
-          <li><a href="#schedule">スケジュール</a></li>
+          <li><a href="#slides">講義スライド</a></li>
           <li><a href="#links">リンク集</a></li>
-          <li><a href="#slides">スライド</a></li>
-          <li><a href="#setup">セットアップ</a></li>
-          <li><a href="#content">コンテンツ</a></li>
-          <li><a href="#architecture">アーキテクチャ</a></li>
-          <li><a href="#data">データ</a></li>
-          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#presentation">チーム発表</a></li>
         </ul>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="メニュー">
@@ -339,134 +173,29 @@
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero" id="hero">
+  <!-- Hero - compact -->
+  <section class="hero">
     <div>
-      <p style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-bottom:12px; letter-spacing:0.1em;">#Jauger_okinawa</p>
       <h1>データで考える、沖縄の<br><span class="accent">「ちょうどいい」と「もっといい」</span></h1>
-      <p class="subtitle">Jagu'e'r 沖縄分科会 &times; サンエー &times; 琉球大学 特別コラボハンズオン</p>
-      <p style="font-size:0.9rem; color:rgba(255,255,255,0.75); max-width:560px; margin:0 auto 24px;">沖縄の未来をデータで見つけよう！サンエーの現場データを Google Cloud の最新 AI ツールで分析する 1Day 体験ワークショップ</p>
+      <p class="subtitle">Jagu'e'r 沖縄分科会 &times; サンエー &times; 琉球大学</p>
       <div class="meta-info">
-        <span class="meta-badge">&#128197; 2026/4/11（土）10:00〜15:00（受付 09:30）</span>
-        <span class="meta-badge">&#128205; 琉球大学 工学部 講義室</span>
-        <span class="meta-badge">&#9729;&#65039; BigQuery &times; Gemini &times; Data Clean Room</span>
-        <span class="meta-badge">&#127846; BBQ交流会 16:00〜 @きらきらビーチ</span>
-      </div>
-      <div class="hero-cta">
-        <a href="https://jaguer.connpass.com/event/386873/" target="_blank" rel="noopener" class="btn btn-primary">connpass で参加登録</a>
-        <a href="#setup" class="btn btn-outline">環境セットアップへ</a>
+        <span class="meta-badge">&#128197; 2026/4/11（土）10:00〜15:00</span>
+        <span class="meta-badge">&#128205; 琉球大学 工学部</span>
+        <span class="meta-badge">&#127846; BBQ 16:00〜 @きらきらビーチ</span>
       </div>
     </div>
   </section>
 
-  <!-- Overview -->
-  <section class="section" id="overview">
+  <!-- Slides - Main content -->
+  <section class="section" id="slides">
     <div class="section-inner">
-      <span class="section-label">Overview</span>
-      <h2 class="section-title">イベント概要</h2>
-      <p class="section-desc">
-        沖縄最大の流通企業「サンエー」の実 PoS データ（匿名化済み）を使い、Google Cloud の BigQuery と Gemini を活用したデータ分析を体験するワークショップです。
-      </p>
+      <span class="section-label">Handson Slides</span>
+      <h2 class="section-title">講義スライド</h2>
+      <p class="section-desc">セットアップ手順からハンズオン、チーム課題まで。<a href="marp/handson.html" target="_blank" style="font-weight:700;">全画面で開く</a></p>
 
-      <table>
-        <tr><th style="width:140px;">項目</th><th>内容</th></tr>
-        <tr><td><strong>日時</strong></td><td>2026年4月11日（土）10:00〜15:00（受付 09:30〜）</td></tr>
-        <tr><td><strong>場所</strong></td><td>琉球大学 工学部 講義室（沖縄県中頭郡西原町字千原1）</td></tr>
-        <tr><td><strong>主催</strong></td><td><a href="https://jaguer.jp/" target="_blank">Jagu'e'r</a>（Google Cloud ユーザー会）沖縄分科会</td></tr>
-        <tr><td><strong>協力</strong></td><td>株式会社サンエー（データ提供）、琉球大学</td></tr>
-        <tr><td><strong>対象</strong></td><td>沖縄県内の大学生・大学院生・高専生、データ分析や Google Cloud に興味のある社会人（文系・理系不問、初心者歓迎）</td></tr>
-        <tr><td><strong>持ち物</strong></td><td>ノートPC（Wi-Fi接続可能なもの、必須）、Google アカウント</td></tr>
-        <tr><td><strong>BBQ交流会</strong></td><td>16:00〜20:00 @ 西原きらきらビーチ（希望者・申込フォームで選択）</td></tr>
-      </table>
-
-      <div style="background:#FFF3E0; border-radius:12px; padding:16px 20px; margin-top:20px; border-left:4px solid #F4A261;">
-        <p style="font-size:0.88rem; color:#744210; margin:0;"><strong>&#9888;&#65039; 注意事項:</strong> 提供データは本イベントの分析目的のみに使用が許可されています。データの持ち出し・複製・第三者への提供は禁止です。イベント中の写真・動画は主催者の広報活動に利用される場合があります。</p>
+      <div style="position:relative; width:100%; padding-top:56.25%; border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+        <iframe src="marp/handson.html" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
       </div>
-
-      <div class="card-grid" style="margin-top:36px;">
-        <div class="card">
-          <div class="card-icon">&#129302;</div>
-          <h3>AI に聞くだけでデータ分析</h3>
-          <p>Gemini in BigQuery を使い、日本語で質問するだけでデータから答えが返ってくる体験。SQLの知識は不要です。</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">&#128202;</div>
-          <h3>サンエーの実データで分析</h3>
-          <p>皆さんがよく行くサンエーの購買データ（匿名化済み）を題材に、身近なデータの面白さを発見します。</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">&#128274;</div>
-          <h3>データクリーンルーム体験</h3>
-          <p>企業の機密データを安全に共有するための最新技術「データクリーンルーム」を実際に体験できます。</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Schedule -->
-  <section class="section" id="schedule">
-    <div class="section-inner">
-      <span class="section-label">Schedule</span>
-      <h2 class="section-title">タイムテーブル</h2>
-      <p class="section-desc">セッション + ハンズオン + BBQ交流会の1Day体験。ペースに合わせて柔軟に進行します。</p>
-
-      <ul class="timeline">
-        <li>
-          <span class="time">09:30</span>
-          <span class="event-title">受付開始</span>
-          <span class="event-desc">琉球大学 工学部 講義室</span>
-        </li>
-        <li>
-          <span class="time">10:00 - 10:30</span>
-          <span class="event-title">オープニング &amp; インプットトーク</span>
-          <span class="event-desc">イベント紹介・サンエーデータの概要・データクリーンルームの解説</span>
-        </li>
-        <li>
-          <span class="time">10:30 - 11:00</span>
-          <span class="event-title">Googler セッション</span>
-          <span class="event-desc">Google Cloud のエキスパートによるセッション</span>
-        </li>
-        <li>
-          <span class="time">11:00 - 11:10</span>
-          <span class="event-title">小休憩</span>
-          <span class="event-desc"></span>
-        </li>
-        <li>
-          <span class="time">11:10 - 12:00</span>
-          <span class="event-title">Jagu'e'r セッション</span>
-          <span class="event-desc">Jagu'e'r メンバーによるセッション</span>
-        </li>
-        <li>
-          <span class="time">12:00 - 13:00</span>
-          <span class="event-title">昼休憩</span>
-          <span class="event-desc"></span>
-        </li>
-        <li>
-          <span class="time">13:00 - 14:00</span>
-          <span class="event-title">ハンズオン（分析 + 謎解き）</span>
-          <span class="event-desc">環境セットアップ → AI に聞いてみよう（Gemini in BigQuery）→「答えのある問い」に挑戦</span>
-        </li>
-        <li>
-          <span class="time">14:00 - 14:30</span>
-          <span class="event-title">自由分析タイム</span>
-          <span class="event-desc">コースA: もっと AI に聞く &amp; 自由分析 / コースB: データ基盤設計ディスカッション</span>
-        </li>
-        <li>
-          <span class="time">14:30 - 15:00</span>
-          <span class="event-title">成果発表・クロージング</span>
-          <span class="event-desc">面白かった発見の共有・振り返り</span>
-        </li>
-        <li>
-          <span class="time">15:00</span>
-          <span class="event-title">現地解散</span>
-          <span class="event-desc"></span>
-        </li>
-        <li>
-          <span class="time">16:00 - 20:00</span>
-          <span class="event-title">BBQ 交流会 @ 西原きらきらビーチ</span>
-          <span class="event-desc">データの話の続きはビーチで！申込フォームで参加可否を選択してください。</span>
-        </li>
-      </ul>
     </div>
   </section>
 
@@ -475,626 +204,102 @@
     <div class="section-inner">
       <span class="section-label">Quick Links</span>
       <h2 class="section-title">当日リンク集</h2>
-      <p class="section-desc">ハンズオン中に使用するリンクをまとめています。</p>
 
       <div class="card-grid">
         <div class="card">
           <div class="card-icon">&#127899;</div>
-          <h3>バウチャー（Google Cloud クレジット）</h3>
-          <p><a href="https://trygcp.dev/claim/bdc-Jaguer-okinawa-bwai" target="_blank" style="font-weight:700; font-size:0.95rem;">trygcp.dev/claim/bdc-Jaguer-okinawa-bwai</a></p>
+          <h3>バウチャー</h3>
+          <p><a href="https://trygcp.dev/claim/bdc-Jaguer-okinawa-bwai" target="_blank" style="font-weight:700;">trygcp.dev/claim/bdc-Jaguer-okinawa-bwai</a></p>
         </div>
         <div class="card">
           <div class="card-icon">&#9729;&#65039;</div>
           <h3>Google Cloud コンソール</h3>
-          <p><a href="https://console.cloud.google.com" target="_blank" style="font-weight:700; font-size:0.95rem;">console.cloud.google.com</a></p>
+          <p><a href="https://console.cloud.google.com" target="_blank" style="font-weight:700;">console.cloud.google.com</a></p>
         </div>
         <div class="card">
           <div class="card-icon">&#128202;</div>
-          <h3>発表スライドビルダー</h3>
-          <p><a href="slides/builder.html" target="_blank" style="font-weight:700; font-size:0.95rem;">スライドビルダーを開く</a></p>
+          <h3>connpass イベントページ</h3>
+          <p><a href="https://jaguer.connpass.com/event/386873/" target="_blank" style="font-weight:700;">jaguer.connpass.com/event/386873/</a></p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Slides -->
-  <section class="section" id="slides">
+  <!-- Team Presentation -->
+  <section class="section" id="presentation">
     <div class="section-inner">
-      <span class="section-label">Slides</span>
-      <h2 class="section-title">ハンズオン スライド</h2>
-      <p class="section-desc">当日の進行スライドです。セットアップ手順・チーム課題・発表ガイドを含みます。<a href="marp/handson.html" target="_blank">全画面で開く</a></p>
-
-      <div style="position:relative; width:100%; padding-top:56.25%; border-radius:16px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-        <iframe src="marp/handson.html" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
-      </div>
-
-      <!-- 発表テンプレート -->
-      <h3 style="font-size:1.15rem; font-weight:800; color:var(--deep-sea); margin:48px 0 12px;">チーム発表用スライドビルダー</h3>
-      <p style="font-size:0.9rem; color:#64748B; margin-bottom:12px;">
-        成果発表（各チーム3分）で使用するスライドを、ブラウザ上で作成できます。フォームに入力するだけでスライドが自動生成され、そのままプレゼンも可能です。
-      </p>
+      <span class="section-label">Team Presentation</span>
+      <h2 class="section-title">チーム発表（各チーム3分）</h2>
+      <p class="section-desc">ブラウザ上でフォーム入力 → スライド自動生成 → そのままプレゼン。共有リンクで全体に共有できます。</p>
 
       <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px;">
         <a href="slides/builder.html" target="_blank" class="btn btn-primary" style="text-decoration:none;">スライドビルダーを開く</a>
-        <a href="slides/presentation_template.pdf" download class="btn btn-outline" style="border-color:#E2E8F0; color:#475569; text-decoration:none;">PDF テンプレートをダウンロード</a>
+        <a href="slides/presentation_template.pdf" download class="btn btn-outline" style="text-decoration:none;">PDF テンプレート</a>
       </div>
 
-      <div style="background:#F0FFF4; border-radius:12px; padding:16px 20px; margin-bottom:24px; border-left:4px solid #38A169;">
-        <p style="font-size:0.85rem; color:#22543D; margin:0;"><strong>使い方:</strong> (1) チーム名を選択 (2) 各項目を入力 (3)「プレゼン開始」で全画面発表 (4)「共有リンク生成」でチーム内・全体に共有可能</p>
-      </div>
-
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
-        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <img src="slides/slide_01_cover.png" alt="表紙: チーム名・メンバー" style="width:100%; display:block;">
-          <div style="padding:12px 16px; background:#fff;">
-            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">1. 表紙</p>
-            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">チーム名とメンバーを記入</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+        <div style="border-radius:10px; overflow:hidden; border:1px solid #E2E8F0;">
+          <img src="slides/slide_01_cover.png" alt="表紙" style="width:100%; display:block;">
+          <div style="padding:10px 14px; background:#fff;">
+            <p style="font-size:0.8rem; font-weight:700; color:var(--deep-sea); margin:0;">1. 表紙</p>
           </div>
         </div>
-        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <img src="slides/slide_02_question.png" alt="取り組んだ問い" style="width:100%; display:block;">
-          <div style="padding:12px 16px; background:#fff;">
-            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">2. 取り組んだ問い</p>
-            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">分析テーマと背景を記入</p>
+        <div style="border-radius:10px; overflow:hidden; border:1px solid #E2E8F0;">
+          <img src="slides/slide_02_question.png" alt="問い" style="width:100%; display:block;">
+          <div style="padding:10px 14px; background:#fff;">
+            <p style="font-size:0.8rem; font-weight:700; color:var(--deep-sea); margin:0;">2. 取り組んだ問い</p>
           </div>
         </div>
-        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <img src="slides/slide_03_approach.png" alt="分析アプローチ" style="width:100%; display:block;">
-          <div style="padding:12px 16px; background:#fff;">
-            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">3. 分析アプローチ</p>
-            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">仮説 → 分析 → 検証の流れと SQL</p>
+        <div style="border-radius:10px; overflow:hidden; border:1px solid #E2E8F0;">
+          <img src="slides/slide_03_approach.png" alt="アプローチ" style="width:100%; display:block;">
+          <div style="padding:10px 14px; background:#fff;">
+            <p style="font-size:0.8rem; font-weight:700; color:var(--deep-sea); margin:0;">3. 分析アプローチ</p>
           </div>
         </div>
-        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <img src="slides/slide_04_findings.png" alt="発見したこと" style="width:100%; display:block;">
-          <div style="padding:12px 16px; background:#fff;">
-            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">4. 発見したこと</p>
-            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">3つの発見 + グラフ/スクリーンショット</p>
+        <div style="border-radius:10px; overflow:hidden; border:1px solid #E2E8F0;">
+          <img src="slides/slide_04_findings.png" alt="発見" style="width:100%; display:block;">
+          <div style="padding:10px 14px; background:#fff;">
+            <p style="font-size:0.8rem; font-weight:700; color:var(--deep-sea); margin:0;">4. 発見したこと</p>
           </div>
         </div>
-        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <img src="slides/slide_05_insight.png" alt="考察と提案" style="width:100%; display:block;">
-          <div style="padding:12px 16px; background:#fff;">
-            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">5. 考察と提案</p>
-            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">データから見えたこと + サンエーへの提案</p>
+        <div style="border-radius:10px; overflow:hidden; border:1px solid #E2E8F0;">
+          <img src="slides/slide_05_insight.png" alt="考察" style="width:100%; display:block;">
+          <div style="padding:10px 14px; background:#fff;">
+            <p style="font-size:0.8rem; font-weight:700; color:var(--deep-sea); margin:0;">5. 考察と提案</p>
           </div>
         </div>
-        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-          <img src="slides/slide_06_closing.png" alt="ありがとうございました" style="width:100%; display:block;">
-          <div style="padding:12px 16px; background:#fff;">
-            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">6. クロージング</p>
-            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">質疑応答</p>
+        <div style="border-radius:10px; overflow:hidden; border:1px solid #E2E8F0;">
+          <img src="slides/slide_06_closing.png" alt="クロージング" style="width:100%; display:block;">
+          <div style="padding:10px 14px; background:#fff;">
+            <p style="font-size:0.8rem; font-weight:700; color:var(--deep-sea); margin:0;">6. クロージング</p>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Setup Guide -->
-  <section class="section" id="setup">
-    <div class="section-inner">
-      <span class="section-label">Setup Guide</span>
-      <h2 class="section-title">環境セットアップガイド</h2>
-      <p class="section-desc">Google Cloud が初めての方でも、手順通りに進めれば 15 分程度で完了します。</p>
-
-      <div class="step-box">
-        <h3><span class="step-number">1</span> Google アカウントの準備</h3>
-        <p>Google Cloud を利用するには Google アカウントが必要です。</p>
-        <ul>
-          <li><strong>Gmail アカウント</strong>をお持ちの方 → そのまま使えます</li>
-          <li><strong>大学のメールアドレス</strong>が Google Workspace の場合 → そのまま使えます</li>
-          <li>Google アカウントをお持ちでない方 → <a href="https://accounts.google.com" target="_blank">accounts.google.com</a> で無料作成</li>
-        </ul>
-      </div>
-
-      <div class="step-box">
-        <h3><span class="step-number">2</span> Google Cloud プロジェクトの作成</h3>
-        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
-          <li><a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> にアクセスしてログイン</li>
-          <li>画面上部の「プロジェクトの選択」をクリック → 「新しいプロジェクト」</li>
-          <li>プロジェクト名: <code>handson-XXXX</code>（XXXX は好きな名前）を入力して「作成」</li>
-          <li>通知から「プロジェクトを選択」で切り替え</li>
-        </ol>
-        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin-top:20px;">課金（Billing）の設定</h4>
-        <p><strong>バウチャーを使用する方（当日案内）:</strong></p>
-        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
-          <li>以下のバウチャーURLにアクセス:<br><a href="https://trygcp.dev/claim/bdc-Jaguer-okinawa-bwai" target="_blank" style="font-weight:700;">https://trygcp.dev/claim/bdc-Jaguer-okinawa-bwai</a></li>
-          <li>Google アカウントでログインして「同意して続行」</li>
-          <li>課金アカウントが自動作成されます</li>
-        </ol>
-        <p style="margin-top:10px;"><strong>無料トライアルの方:</strong> コンソール上部の「無料で利用開始」から登録（$300分の無料クレジット）</p>
-      </div>
-
-      <div class="step-box">
-        <h3><span class="step-number">3</span> BigQuery API の有効化</h3>
-        <p>コンソール上部の検索バーに <code>BigQuery API</code> と入力 → 選択 → 「有効にする」をクリック</p>
-      </div>
-
-      <div class="step-box">
-        <h3><span class="step-number">4</span> Analytics Hub でデータをサブスクライブ</h3>
-        <p>ここが最も重要なステップです。運営側が提供するデータを、自分のプロジェクトから参照できるようにします。</p>
-        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
-          <li>左メニュー →「Analytics Hub」をクリック</li>
-          <li>「検索」タブで <code>sana-ryudai-handson</code> と入力して検索</li>
-          <li>表示されるリスティングをクリック →「サブスクライブ」</li>
-          <li>プロジェクト: 自分のプロジェクトを選択、データセット名はそのまま OK</li>
-          <li><strong>9個すべて</strong>のリスティングをサブスクライブ</li>
-        </ol>
-        <p style="margin-top:12px;">以下の <strong>全9個</strong> のリスティングをサブスクライブしてください:</p>
-        <table>
-          <tr><th>リスティング名</th><th>内容</th><th>件数</th></tr>
-          <tr><td>customer_sales_details</td><td>顧客売上明細</td><td>約7,500万件</td></tr>
-          <tr><td>shop_item_daily_performance</td><td>店別単品別実績（日別）</td><td>約5,800万件</td></tr>
-          <tr><td>card_master</td><td>ポイントカード情報</td><td>約258万件</td></tr>
-          <tr><td>customer_master</td><td>顧客属性情報</td><td>約141万件</td></tr>
-          <tr><td>food_item_master</td><td>食品商品マスター</td><td>約63万件</td></tr>
-          <tr><td>mart_daily_sales</td><td>日別 &times; 店舗別売上集計</td><td>約5,400件</td></tr>
-          <tr><td>mart_customer_summary</td><td>顧客ごとの購買サマリー</td><td>約59万件</td></tr>
-          <tr><td>mart_product_ranking</td><td>商品ランキング</td><td>約29万件</td></tr>
-          <tr><td>mart_basket_analysis</td><td>買い物かご分析</td><td>約960万件</td></tr>
-        </table>
-      </div>
-
-      <div class="step-box">
-        <h3><span class="step-number">5</span> 動作確認（SELECT 1）</h3>
-        <p>BigQuery コンソールで以下のクエリを <strong>各テーブルに対して実行</strong> してください。「最近使用したアイテム」に表示されるようになります。</p>
-        <pre><code>SELECT 1 FROM `sana_ryudai_handson.card_master` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.customer_master` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.customer_sales_details` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.food_item_master` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.mart_basket_analysis` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.mart_customer_summary` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.mart_daily_sales` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.mart_product_ranking` LIMIT 1;
-SELECT 1 FROM `sana_ryudai_handson.shop_item_daily_performance` LIMIT 1;</code></pre>
-        <p style="margin-top:8px; font-size:0.85rem; color:#64748B;">9テーブルすべてに実行してください。結果が返ればOKです。</p>
-      </div>
-
-      <div class="step-box">
-        <h3><span class="step-number">6</span> Conversational Analytics エージェントの構築</h3>
-        <p>自然言語でデータ分析するには、<strong>Data Agent</strong> の構築が必要です。</p>
-        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
-          <li>エクスプローラでテーブルを選択</li>
-          <li><strong>「会話を作成」</strong> をクリック → エージェントが作成されます</li>
-          <li>エージェント画面で <strong>「ナレッジソースを追加」</strong> をクリック</li>
-          <li>「最近使用したアイテム」から <strong>分析に使いたいテーブルをすべて追加</strong></li>
-        </ol>
-        <div style="background:#EBF8FF; border-radius:8px; padding:12px 16px; margin-top:12px; border-left:4px solid #3182CE;">
-          <p style="font-size:0.85rem; color:#2A4365; margin:0;">複数のテーブルを追加することで、テーブル間の結合分析も可能になります。エージェントは他の人と共有できないため、各自で構築する必要があります。</p>
-        </div>
-      </div>
-
-      <div class="step-box">
-        <h3><span class="step-number">7</span> Conversational Analytics で動作確認</h3>
-        <p>エージェント構築が完了したら、自然言語で質問してみましょう:</p>
-        <pre><code>どんなテーブルがありますか？
-売上データの件数は？
-店舗は何店舗ある？</code></pre>
-        <p style="margin-top:8px; font-size:0.85rem; color:#64748B;">結果が出たら周りの人と見比べてみてください。</p>
-      </div>
-
-      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin-top:40px; margin-bottom:16px;">セットアップ完了チェックリスト</h3>
-      <ul class="checklist">
-        <li>Google アカウントでログインした</li>
-        <li>Google Cloud プロジェクトを作成した</li>
-        <li>課金アカウントを設定した（バウチャーまたは無料トライアル）</li>
-        <li>BigQuery API を有効化した</li>
-        <li>Analytics Hub で 9 つのリスティングをサブスクライブした</li>
-        <li>9テーブルすべてに SELECT 1 を実行した</li>
-        <li>Conversational Analytics エージェントを構築した</li>
-        <li>自然言語で質問して結果が返った</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- Handson Content -->
-  <section class="section" id="content">
-    <div class="section-inner">
-      <span class="section-label">Handson Content</span>
-      <h2 class="section-title">ハンズオンコンテンツ</h2>
-      <p class="section-desc">「沖縄のスーパーのデータを AI &times; Google Cloud で分析してみよう」</p>
-
-      <!-- Step 1 -->
-      <div class="step-box">
-        <h3><span class="step-number">1</span> 環境セットアップ & まずデータを見てみよう（15分）</h3>
-        <p>分析環境に慣れ、データの全体感をつかみます。</p>
-        <pre><code>-- まずは売上明細を見てみよう
-SELECT * FROM `meetup8.customer_sales_details` LIMIT 10;
-
--- このデータは全部で何件？
-SELECT COUNT(*) AS total_records FROM `meetup8.customer_sales_details`;
--- → 3,059件。「1つ1つが、誰かがサンエーでレジを通した記録です」</code></pre>
-      </div>
-
-      <!-- Step 2 -->
-      <div class="step-box">
-        <h3><span class="step-number">2</span> AI に聞いてみよう &mdash; Gemini で自然言語分析（30分）</h3>
-        <p>SQLを知らない初学者でも「日本語で聞けば答えが返ってくる」体験をします。</p>
-
-        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin:16px 0 8px;">Phase 1: まず AI に聞いてみる</h4>
-        <p>Gemini in BigQuery で以下のような質問を試してみましょう:</p>
-        <ul>
-          <li>「このデータの中で、一番高い買い物はいくらでしたか？」</li>
-          <li>「店舗ごとの売上合計を、多い順に並べてください」</li>
-          <li>「1月で一番売上が高かった日はいつですか？その理由として考えられることは？」</li>
-        </ul>
-
-        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin:16px 0 8px;">Phase 2: AI が生成した SQL を読み解く</h4>
-        <pre><code>-- 例: Gemini が生成した「店舗別売上合計」のSQL
-SELECT
-  store_code,
-  SUM(tax_included_amount) AS total_sales
-FROM `meetup8.customer_sales_details`
-GROUP BY store_code
-ORDER BY total_sales DESC;</code></pre>
-        <p><strong>SQL の 4 つの基本要素:</strong> <code>SELECT</code>（何を見たいか）、<code>FROM</code>（どのテーブルから）、<code>GROUP BY</code>（何でまとめるか）、<code>ORDER BY</code>（どう並べるか）</p>
-
-        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin:16px 0 8px;">Phase 3: 自分の問いを AI にぶつける</h4>
-        <ul>
-          <li>「一番たくさんの商品を一度に買った人は、何品買った？」</li>
-          <li>「特定の商品コードを買った人は、他にどんな商品を買っている？」</li>
-          <li>「金曜日と日曜日で、買い物の仕方に違いはある？」</li>
-          <li>自由に好きな質問を考えてOK！</li>
-        </ul>
-      </div>
-
-      <!-- Step 3 -->
-      <div class="step-box">
-        <h3><span class="step-number">3</span> 謎解き分析 &mdash;「答えのある問い」に挑戦（30分）</h3>
-        <p>データ分析の本質は「なぜ？」を考えること。AI に聞いても良いし、SQL を自分で書いても良い。手段は問いません。</p>
-
-        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q1: 元旦の売上が突出して高いのはなぜ？</h4>
-        <pre><code>SELECT
-  usage_date,
-  COUNT(DISTINCT CONCAT(card_no, store_code, trans_no)) AS txn_count,
-  SUM(tax_included_amount) AS total_sales,
-  SAFE_DIVIDE(SUM(tax_included_amount),
-    COUNT(DISTINCT CONCAT(card_no, store_code, trans_no))) AS avg_per_txn
-FROM `meetup8.customer_sales_details`
-GROUP BY usage_date
-ORDER BY usage_date;</code></pre>
-        <p><strong>答え:</strong> 1月1日は売上64,037円で月間最高。客単価3,370円も最高。お正月の買い出し（おせち材料・お年始用品）で1回あたりの購入額が跳ね上がる。</p>
-
-        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q2: 1月28日（土曜日）の売上が極端に低いのはなぜ？</h4>
-        <pre><code>SELECT
-  FORMAT_DATE('%A', PARSE_DATE('%Y%m%d', usage_date)) AS day_of_week,
-  SUM(tax_included_amount) AS total_sales,
-  COUNT(*) AS item_count
-FROM `meetup8.customer_sales_details`
-GROUP BY day_of_week
-ORDER BY total_sales DESC;</code></pre>
-        <p><strong>答え:</strong> 日曜日が189,006円で最も高く、土曜日は111,404円と意外と低い。特に1/28(土)は月間最低の12,147円。前日に月間最多の23取引があり、<strong>金曜に買い溜めした翌土曜は来店が減る</strong>パターン。<br>「土曜が一番売れるはず」という思い込みが、データで覆される瞬間。これがデータ分析の醍醐味。</p>
-
-        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q3: 一番大量に買い物をしたお客さんはどんな買い方？</h4>
-        <pre><code>SELECT
-  card_no, store_code, usage_date,
-  COUNT(*) AS item_count,
-  SUM(tax_included_amount) AS basket_total
-FROM `meetup8.customer_sales_details`
-GROUP BY card_no, store_code, trans_no, usage_date
-ORDER BY item_count DESC
-LIMIT 5;</code></pre>
-        <p><strong>答え:</strong> 最大バスケットは1/19（木）38品・9,756円（1品平均256円）。最高額バスケットは1/1（元旦）37品・17,349円。品数は近いのに金額は1.8倍 &mdash; 正月は単価の高い商品を買っている。</p>
-
-        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q4（発展）: ポイントを多く持つ人は本当にたくさん買い物をしている？</h4>
-        <pre><code>SELECT
-  c.card_no,
-  c.total_point AS current_points,
-  c.cumulative_issued_point AS lifetime_points,
-  COUNT(*) AS purchase_count,
-  SUM(s.tax_included_amount) AS total_spent
-FROM `meetup8.card_master` c
-JOIN `meetup8.customer_sales_details` s ON c.card_no = s.card_no
-GROUP BY c.card_no, c.total_point, c.cumulative_issued_point
-ORDER BY total_spent DESC
-LIMIT 10;</code></pre>
-        <p><strong>答え:</strong> 必ずしも一致しない。ポイント残高が多い人は「貯める派」、少ない人は「使う派」。顧客行動の多様性がデータから見える。</p>
-      </div>
-
-      <!-- Step 4 -->
-      <div class="step-box">
-        <h3><span class="step-number">4</span> 発展コンテンツ（20分・選択制）</h3>
-        <div class="card-grid">
-          <div class="card">
-            <div class="card-icon">&#127793;</div>
-            <h3>コース A: もっと AI に聞いてみよう</h3>
-            <p>初学者〜中級者向け。自由に質問を考えて AI に聞き、面白い発見を探す。ウィンドウ関数やサブクエリにも挑戦。</p>
-          </div>
-          <div class="card">
-            <div class="card-icon">&#9881;&#65039;</div>
-            <h3>コース B: データ基盤設計ディスカッション</h3>
-            <p>経験者向け。メダリオンアーキテクチャ設計、データクリーンルームの設計論、BigQuery パフォーマンス最適化。</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Architecture -->
-  <section class="section" id="architecture">
-    <div class="section-inner">
-      <span class="section-label">Architecture</span>
-      <h2 class="section-title">アーキテクチャ &amp; セキュリティ</h2>
-      <p class="section-desc">データクリーンルーム（DCR）による多層防御で、サンエーの実データを安全に共有しています。</p>
-
-      <div class="arch-diagram">
-        <div class="mermaid">
-graph TB
-    subgraph PROVIDER["データ提供者プロジェクト"]
-        GCS["Cloud Storage<br/>CSV ファイル"]
-        BQ_B["BigQuery sana_bronze<br/>（生データ・内部専用）"]
-        BQ_M["BigQuery sana_meetup8<br/>（匿名化済みビュー + マート）"]
-        DCR["Analytics Hub DCR<br/>9 リスティング<br/>（エグレス制御有効）"]
-        GCS --> BQ_B --> BQ_M --> DCR
-    end
-
-    subgraph SUBSCRIBER["参加者の GCP プロジェクト"]
-        LINKED["Linked Dataset<br/>（読み取り専用）"]
-        GEMINI["Gemini in BigQuery"]
-        LOOKER["Looker Studio"]
-        LINKED --> GEMINI
-        LINKED --> LOOKER
-    end
-
-    DCR -->|"サブスクライブ"| LINKED
-        </div>
-      </div>
-
-      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">セキュリティ多層防御</h3>
-
-      <div class="security-layers">
-        <div class="security-layer sl-1">
-          <span class="layer-num">1</span>
-          <div>
-            <h4>ソースデータ匿名化</h4>
-            <p>個人情報 → HEX エンコード / 原価 → マスク（*****）/ カード番号 → SHA-256 ハッシュ</p>
-          </div>
-        </div>
-        <div class="security-layer sl-2">
-          <span class="layer-num">2</span>
-          <div>
-            <h4>ビューによるカラム制御</h4>
-            <p>HEX カラム・原価カラムを除外 / 店舗コードを店舗名に変換</p>
-          </div>
-        </div>
-        <div class="security-layer sl-3">
-          <span class="layer-num">3</span>
-          <div>
-            <h4>エグレス制御（DCR 機能）</h4>
-            <p>EXPORT / COPY / CREATE TABLE AS SELECT を全てブロック</p>
-          </div>
-        </div>
-        <div class="security-layer sl-4">
-          <span class="layer-num">4</span>
-          <div>
-            <h4>IAM アクセス制御</h4>
-            <p>Google Group メンバーのみサブスクライブ可能</p>
-          </div>
-        </div>
-        <div class="security-layer sl-5">
-          <span class="layer-num">5</span>
-          <div>
-            <h4>プロジェクト分離</h4>
-            <p>プロバイダーとサブスクライバーを分離 / クエリコストは参加者負担</p>
-          </div>
-        </div>
-      </div>
-
-      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">エグレス制御の効果</h3>
-      <table>
-        <tr><th>操作</th><th style="width:120px;">許可/ブロック</th></tr>
-        <tr><td><code>SELECT</code> クエリ（LIMIT 含む）</td><td style="color:#38A169; font-weight:700;">許可</td></tr>
-        <tr><td>Gemini in BigQuery（自然言語 → SQL）</td><td style="color:#38A169; font-weight:700;">許可</td></tr>
-        <tr><td>Looker Studio 接続</td><td style="color:#38A169; font-weight:700;">許可</td></tr>
-        <tr><td><code>EXPORT DATA</code>（GCS へエクスポート）</td><td style="color:#E53E3E; font-weight:700;">ブロック</td></tr>
-        <tr><td><code>CREATE TABLE AS SELECT</code></td><td style="color:#E53E3E; font-weight:700;">ブロック</td></tr>
-        <tr><td><code>COPY</code>（他テーブルへコピー）</td><td style="color:#E53E3E; font-weight:700;">ブロック</td></tr>
-      </table>
-
-      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">匿名化方針</h3>
-      <table>
-        <tr><th>データ要素</th><th>処理方法</th><th>公開ビューでの扱い</th></tr>
-        <tr><td>カード番号</td><td>SHA-256 ハッシュ（ビュー層）</td><td class="anon-hash">ハッシュ値で公開</td></tr>
-        <tr><td>顧客 ID（cif_no）</td><td>追加処理なし</td><td class="anon-safe">そのまま公開（結合キー）</td></tr>
-        <tr><td>氏名</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
-        <tr><td>生年月日</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
-        <tr><td>住所</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
-        <tr><td>電話番号</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
-        <tr><td>性別</td><td>コード値（1/2）</td><td class="anon-safe">公開</td></tr>
-        <tr><td>職業コード</td><td>2 桁コード</td><td class="anon-safe">公開</td></tr>
-        <tr><td>店舗コード</td><td>店舗名に変換（ビュー層）</td><td class="anon-safe">店舗名で公開</td></tr>
-        <tr><td>原価</td><td>マスク済み（*****）</td><td class="anon-removed">完全除外</td></tr>
-      </table>
-    </div>
-  </section>
-
-  <!-- Data Model -->
-  <section class="section" id="data">
-    <div class="section-inner">
-      <span class="section-label">Data Model</span>
-      <h2 class="section-title">データモデル &amp; テーブル定義</h2>
-      <p class="section-desc">サンエーの PoS データをベースに、参加者が安全に分析できる形に加工しています。</p>
-
-      <div class="arch-diagram">
-        <div class="mermaid">
-erDiagram
-    customer_master ||--o{ card_master : "CIF番号"
-    card_master ||--o{ customer_sales_details : "カード番号"
-    food_item_master ||--o{ customer_sales_details : "商品コード"
-    food_item_master ||--o{ shop_item_daily_performance : "商品コード"
-
-    customer_master {
-        string cif_no PK "顧客ID"
-        int gender_type "性別（1男 2女）"
-        string occupation_code "職業コード"
-        string customer_status "顧客ステータス"
-    }
-
-    card_master {
-        string card_no PK "SHA-256ハッシュ"
-        string cif_no FK "顧客ID"
-        int total_point "ポイント残高"
-        int cumulative_issued_point "累計ポイント"
-    }
-
-    customer_sales_details {
-        string card_no FK "カード番号"
-        string store_name "店舗名"
-        string usage_date "利用日"
-        string product_code FK "商品コード"
-        int tax_included_amount "税込金額"
-    }
-
-    food_item_master {
-        string product_code PK "商品コード"
-        string product_name "商品名"
-        int standard_price "標準売単価"
-    }
-
-    shop_item_daily_performance {
-        string perf_date "日付"
-        string store_name "店舗名"
-        string product_code FK "商品コード"
-        int sales_amount "売上金額"
-    }
-        </div>
-      </div>
-
-      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:24px 0 16px;">テーブル一覧</h3>
-      <div class="data-table-info">
-        <div class="data-table-card">
-          <span class="badge badge-main">メイン分析対象</span>
-          <h4>customer_sales_details（売上明細）</h4>
-          <p><strong>3,059件</strong> &mdash; 2023年1月の購買データ。日別・店舗別・商品別の売上分析に使用。402取引、平均303円/明細。</p>
-        </div>
-        <div class="data-table-card">
-          <span class="badge badge-ref">マスターデータ</span>
-          <h4>customer_master（顧客マスター）</h4>
-          <p><strong>100件</strong> &mdash; 性別・職業コードなどの顧客属性。個人情報は除外済み。</p>
-        </div>
-        <div class="data-table-card">
-          <span class="badge badge-ref">マスターデータ</span>
-          <h4>card_master（カードマスター）</h4>
-          <p><strong>100件</strong> &mdash; ポイントカード情報。残高・累計発行・精算ポイントでポイント利用状況を把握。</p>
-        </div>
-        <div class="data-table-card">
-          <span class="badge badge-ref">マスターデータ</span>
-          <h4>food_item_master（商品マスター）</h4>
-          <p><strong>16件</strong> &mdash; 食品商品情報。サンエーオリジナルギフト商品のマスター。</p>
-        </div>
-        <div class="data-table-card">
-          <span class="badge badge-perf">実績データ</span>
-          <h4>shop_item_daily_performance（店別日別実績）</h4>
-          <p><strong>100件</strong> &mdash; 2026年2月の51店舗実績。売上・見切・廃棄・在庫まで網羅。</p>
-        </div>
-      </div>
-
-      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">Analytics Hub リスティング構成</h3>
-      <table>
-        <tr><th>区分</th><th>数量</th><th>データセット</th><th>備考</th></tr>
-        <tr><td>公開ビュー</td><td>5</td><td><code>sana_meetup8</code></td><td>Bronze層から個人情報・原価を除外</td></tr>
-        <tr><td>データマート</td><td>4</td><td><code>sana_meetup8</code></td><td>日別売上 / 顧客サマリー / 商品ランキング / バスケット分析</td></tr>
-        <tr><td><strong>合計</strong></td><td><strong>9</strong></td><td>&mdash;</td><td>全てエグレス制御有効</td></tr>
-      </table>
-
-      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">データの特徴</h3>
-      <div class="card-grid">
-        <div class="card">
-          <h3>売上明細の日別パターン</h3>
-          <table style="margin:0;">
-            <tr><th>日付</th><th>曜日</th><th>売上</th><th>特記</th></tr>
-            <tr><td>1/1</td><td>日</td><td>64,037円</td><td><strong>月間最高</strong></td></tr>
-            <tr><td>1/27</td><td>金</td><td>49,524円</td><td>最多取引(23件)</td></tr>
-            <tr><td>1/28</td><td>土</td><td>12,147円</td><td><strong>月間最低</strong></td></tr>
-          </table>
-        </div>
-        <div class="card">
-          <h3>曜日別売上</h3>
-          <table style="margin:0;">
-            <tr><th>曜日</th><th>売上</th><th>明細数</th></tr>
-            <tr><td><strong>日曜</strong></td><td><strong>189,006円</strong></td><td>543件</td></tr>
-            <tr><td>月曜</td><td>170,399円</td><td>572件</td></tr>
-            <tr><td>土曜</td><td>111,404円</td><td>374件</td></tr>
-          </table>
-          <p style="margin-top:8px; font-size:0.82rem;">沖縄のファミリー層の日曜まとめ買い文化が反映</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="section" id="faq">
-    <div class="section-inner">
-      <span class="section-label">FAQ</span>
-      <h2 class="section-title">よくあるトラブルと対処法</h2>
-
-      <div class="faq-item">
-        <div class="faq-q">「課金アカウントが設定されていません」と表示される</div>
-        <div class="faq-a">課金設定が完了していません。バウチャーコードの入力、または無料トライアルの登録を行ってください。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Analytics Hub でリスティングが見つからない</div>
-        <div class="faq-a">検索キーワード（<code>サンエー</code> または <code>sana</code>）が正しいか確認。ハンズオン用 Google アカウントでログインしているか確認。それでも見つからない場合は運営スタッフにお声がけください。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">サブスクライブ時に「権限がありません」と表示される</div>
-        <div class="faq-a">自分のプロジェクトが選択されているか、課金アカウントがリンクされているか、BigQuery API が有効化されているか確認してください。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">クエリ実行時に「アクセスが拒否されました」と表示される</div>
-        <div class="faq-a">サブスクライブが正しく完了していない可能性があります。セットアップの Step 4 を再度確認してください。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">データをダウンロードしようとしたらブロックされた</div>
-        <div class="faq-a">正常な動作です。データクリーンルームの Egress 制御により、データのダウンロード・エクスポートは意図的に防止されています。分析結果は画面上で確認してください。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">プロジェクト ID が「既に使用されています」と表示される</div>
-        <div class="faq-a">プロジェクト ID は世界で一意です。<code>handson-tanaka-0315</code>、<code>handson-ryudai-2026</code> のようにユニークな名前にしてください。</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Gemini がデータセットを認識しない</div>
-        <div class="faq-a">左パネルで <code>meetup8</code> データセットをクリックして選択した状態で再度質問してみてください。</div>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    <p style="margin-bottom:12px;">
-      <a href="https://jaguer.connpass.com/event/386873/" target="_blank">connpass イベントページ</a> &nbsp;|&nbsp;
-      <a href="https://jaguer.connpass.com/" target="_blank">Jagu'e'r 沖縄分科会</a> &nbsp;|&nbsp;
-      <a href="https://cloud.google.com/bigquery/docs/data-clean-rooms" target="_blank">BigQuery Data Clean Rooms</a> &nbsp;|&nbsp;
-      <a href="https://github.com/jaguer-okinawa-bunkakai/2026-vol1-san-a-ryudai-handson-public" target="_blank">GitHub リポジトリ</a>
+    <p style="margin-bottom:8px;">
+      <a href="https://jaguer.connpass.com/event/386873/" target="_blank">connpass</a> &nbsp;|&nbsp;
+      <a href="https://github.com/jaguer-okinawa-bunkakai/2026-vol1-san-a-ryudai-handson-public" target="_blank">GitHub</a> &nbsp;|&nbsp;
+      <a href="https://cloud.google.com/bigquery/docs/data-clean-rooms" target="_blank">BigQuery Data Clean Rooms</a>
     </p>
-    <p>&copy; 2026 Jagu'e'r 沖縄分科会. Powered by Google Cloud.</p>
+    <p>&copy; 2026 Jagu'e'r 沖縄分科会 #Jauger_okinawa</p>
   </footer>
 
-  <!-- Scroll to top -->
   <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
 
   <script>
-    // Mermaid init
-    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: {
-      primaryColor: '#E3F2FD', primaryTextColor: '#1B3A5C', primaryBorderColor: '#0077B6',
-      lineColor: '#0077B6', secondaryColor: '#F0FFF4', tertiaryColor: '#FFF3E0'
-    }});
-
-    // Mobile nav
     document.getElementById('hamburger').addEventListener('click', function() {
       document.getElementById('navLinks').classList.toggle('open');
     });
     document.querySelectorAll('.nav-links a').forEach(function(a) {
-      a.addEventListener('click', function() {
-        document.getElementById('navLinks').classList.remove('open');
-      });
+      a.addEventListener('click', function() { document.getElementById('navLinks').classList.remove('open'); });
     });
-
-    // Scroll to top button
     window.addEventListener('scroll', function() {
       var btn = document.getElementById('scrollTop');
-      if (window.scrollY > 400) { btn.classList.add('visible'); }
-      else { btn.classList.remove('visible'); }
+      if (window.scrollY > 300) { btn.classList.add('visible'); } else { btn.classList.remove('visible'); }
     });
   </script>
 </body>
