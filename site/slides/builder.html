@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>チーム発表スライドビルダー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: #F0F4F8;
+      color: #2D3748;
+      line-height: 1.6;
+    }
+
+    :root {
+      --ocean: #0077B6;
+      --deep-sea: #023E8A;
+      --ocean-pale: #90E0EF;
+      --coral: #E63946;
+      --teal: #2A9D8F;
+      --sunset: #F4A261;
+    }
+
+    /* ===== Editor Mode ===== */
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      height: 100vh;
+    }
+
+    .editor-panel {
+      background: #fff;
+      border-right: 1px solid #E2E8F0;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .editor-panel h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--deep-sea);
+      margin-bottom: 4px;
+    }
+    .editor-panel .subtitle {
+      font-size: 0.78rem;
+      color: #64748B;
+      margin-bottom: 20px;
+    }
+
+    .form-section {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .form-section h3 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ocean);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .form-section h3 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--ocean);
+      color: #fff;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 4px;
+      margin-top: 10px;
+    }
+    label:first-child { margin-top: 0; }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      background: #fff;
+      transition: border 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--ocean);
+      box-shadow: 0 0 0 3px rgba(0,119,182,0.1);
+    }
+    textarea { resize: vertical; min-height: 60px; }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--ocean);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--deep-sea);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #E2E8F0;
+      color: #475569;
+    }
+    .btn-secondary:hover {
+      background: #CBD5E1;
+    }
+    .btn-accent {
+      background: var(--coral);
+      color: #fff;
+    }
+    .btn-accent:hover {
+      background: #C5303A;
+      transform: translateY(-1px);
+    }
+
+    /* Preview panel */
+    .preview-panel {
+      background: #1E293B;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .preview-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .preview-nav button {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .preview-nav button:hover { background: rgba(255,255,255,0.25); }
+    .preview-nav .page-info {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.82rem;
+    }
+
+    .slide-container {
+      width: 100%;
+      max-width: 960px;
+      aspect-ratio: 16/9;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    /* ===== Slides ===== */
+    .slide {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+      display: none;
+      overflow: hidden;
+    }
+    .slide.active { display: flex; }
+
+    /* Slide 1: Cover */
+    .slide-cover {
+      background: linear-gradient(160deg, #023E8A 0%, #0077B6 50%, #48CAE4 100%);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8%;
+      position: relative;
+    }
+    .slide-cover::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 30%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='rgba(255,255,255,0.06)' d='M0,64 C360,120 720,0 1080,64 C1260,96 1380,80 1440,64 L1440,120 L0,120Z'/%3E%3C/svg%3E") no-repeat bottom;
+      background-size: cover;
+    }
+    .slide-cover .event-label {
+      font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 5%;
+      position: relative;
+    }
+    .slide-cover .team-name {
+      font-size: clamp(1.5rem, 5vw, 3.5rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 2%;
+      position: relative;
+      border-bottom: 3px solid rgba(255,255,255,0.3);
+      padding-bottom: 3%;
+    }
+    .slide-cover .event-title {
+      font-size: clamp(0.7rem, 1.5vw, 1.1rem);
+      color: #90E0EF;
+      margin-bottom: 2%;
+      position: relative;
+    }
+    .slide-cover .presentation-type {
+      font-size: clamp(0.9rem, 2vw, 1.5rem);
+      font-weight: 700;
+      color: #fff;
+      position: relative;
+    }
+    .slide-cover .members {
+      position: absolute;
+      bottom: 6%;
+      right: 6%;
+      font-size: clamp(0.5rem, 1vw, 0.75rem);
+      color: rgba(255,255,255,0.7);
+    }
+    .slide-cover .date {
+      position: absolute;
+      bottom: 6%;
+      left: 6%;
+      font-size: clamp(0.5rem, 1vw, 0.75rem);
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Slide 2: Question */
+    .slide-question {
+      background: #FAFCFF;
+      flex-direction: column;
+      padding: 6%;
+    }
+    .slide-question .label {
+      font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+      font-weight: 700;
+      color: var(--ocean);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 3%;
+    }
+    .slide-question .question-text {
+      font-size: clamp(1.2rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      color: var(--deep-sea);
+      margin-bottom: 4%;
+      line-height: 1.3;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+    }
+    .slide-question .context {
+      font-size: clamp(0.55rem, 1.1vw, 0.9rem);
+      color: #64748B;
+      background: #F0F7FF;
+      padding: 3% 4%;
+      border-radius: 12px;
+      border-left: 4px solid var(--ocean);
+    }
+    .slide-question .footer-line {
+      margin-top: auto;
+      padding-top: 2%;
+      border-top: 1px solid #E2E8F0;
+      font-size: clamp(0.4rem, 0.7vw, 0.55rem);
+      color: #94A3B8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Slide 3: Approach */
+    .slide-approach {
+      background: #FAFCFF;
+      flex-direction: column;
+      padding: 6%;
+    }
+    .slide-approach .label {
+      font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+      font-weight: 700;
+      color: var(--ocean);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1%;
+    }
+    .slide-approach .title {
+      font-size: clamp(1rem, 2.5vw, 2rem);
+      font-weight: 900;
+      color: var(--deep-sea);
+      margin-bottom: 4%;
+    }
+    .slide-approach .steps {
+      display: flex;
+      gap: 3%;
+      margin-bottom: 4%;
+      flex: 1;
+    }
+    .slide-approach .step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+    .slide-approach .step-num {
+      width: clamp(28px, 4vw, 48px);
+      height: clamp(28px, 4vw, 48px);
+      border-radius: 50%;
+      background: var(--ocean);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: clamp(0.7rem, 1.2vw, 1rem);
+      margin-bottom: 6%;
+    }
+    .slide-approach .step h4 {
+      font-size: clamp(0.6rem, 1.2vw, 1rem);
+      color: var(--deep-sea);
+      margin-bottom: 4%;
+    }
+    .slide-approach .step p {
+      font-size: clamp(0.5rem, 0.9vw, 0.78rem);
+      color: #64748B;
+      line-height: 1.5;
+    }
+    .slide-approach .step .arrow {
+      position: absolute;
+      right: -8%;
+      top: clamp(14px, 2vw, 24px);
+      font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+      color: #CBD5E1;
+    }
+    .slide-approach .code-block {
+      background: #1E293B;
+      color: #E2E8F0;
+      padding: 3%;
+      border-radius: 8px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: clamp(0.45rem, 0.85vw, 0.72rem);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 30%;
+      overflow: hidden;
+    }
+    .slide-approach .footer-line {
+      margin-top: auto;
+      padding-top: 2%;
+      border-top: 1px solid #E2E8F0;
+      font-size: clamp(0.4rem, 0.7vw, 0.55rem);
+      color: #94A3B8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Slide 4: Findings */
+    .slide-findings {
+      background: #FAFCFF;
+      flex-direction: column;
+      padding: 6%;
+    }
+    .slide-findings .label {
+      font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+      font-weight: 700;
+      color: var(--ocean);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1%;
+    }
+    .slide-findings .title {
+      font-size: clamp(1rem, 2.5vw, 2rem);
+      font-weight: 900;
+      color: var(--deep-sea);
+      margin-bottom: 4%;
+    }
+    .slide-findings .findings-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3%;
+    }
+    .slide-findings .finding {
+      display: flex;
+      align-items: flex-start;
+      gap: 3%;
+      padding: 2.5% 3%;
+      border-radius: 10px;
+      border-left: 4px solid;
+    }
+    .slide-findings .finding:nth-child(1) { background: #FFF5F5; border-color: var(--coral); }
+    .slide-findings .finding:nth-child(2) { background: #F0FFF4; border-color: var(--teal); }
+    .slide-findings .finding:nth-child(3) { background: #FFFAF0; border-color: var(--sunset); }
+    .slide-findings .finding-icon {
+      font-size: clamp(0.9rem, 1.8vw, 1.5rem);
+      flex-shrink: 0;
+    }
+    .slide-findings .finding-content h4 {
+      font-size: clamp(0.6rem, 1.1vw, 0.92rem);
+      font-weight: 700;
+      color: var(--deep-sea);
+    }
+    .slide-findings .finding-content p {
+      font-size: clamp(0.5rem, 0.9vw, 0.78rem);
+      color: #64748B;
+      margin-top: 2px;
+    }
+    .slide-findings .footer-line {
+      margin-top: auto;
+      padding-top: 2%;
+      border-top: 1px solid #E2E8F0;
+      font-size: clamp(0.4rem, 0.7vw, 0.55rem);
+      color: #94A3B8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Slide 5: Insight */
+    .slide-insight {
+      background: #FAFCFF;
+      flex-direction: column;
+      padding: 6%;
+    }
+    .slide-insight .label {
+      font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+      font-weight: 700;
+      color: var(--ocean);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1%;
+    }
+    .slide-insight .title {
+      font-size: clamp(1rem, 2.5vw, 2rem);
+      font-weight: 900;
+      color: var(--deep-sea);
+      margin-bottom: 4%;
+    }
+    .slide-insight .insight-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4%;
+      flex: 1;
+    }
+    .slide-insight .insight-left h4 {
+      font-size: clamp(0.65rem, 1.2vw, 1rem);
+      font-weight: 700;
+      color: var(--deep-sea);
+      margin-bottom: 3%;
+    }
+    .slide-insight .insight-left ul {
+      list-style: none;
+      padding: 0;
+    }
+    .slide-insight .insight-left li {
+      font-size: clamp(0.5rem, 0.95vw, 0.82rem);
+      color: #475569;
+      padding: 2% 0;
+      border-bottom: 1px solid #F1F5F9;
+      display: flex;
+      align-items: flex-start;
+      gap: 2%;
+    }
+    .slide-insight .insight-left li::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ocean);
+      flex-shrink: 0;
+      margin-top: 0.5em;
+    }
+    .slide-insight .proposal-box {
+      background: linear-gradient(135deg, #E8F5E9 0%, #E3F2FD 100%);
+      border-radius: 12px;
+      padding: 5%;
+    }
+    .slide-insight .proposal-box h4 {
+      font-size: clamp(0.65rem, 1.2vw, 1rem);
+      font-weight: 700;
+      color: var(--deep-sea);
+      margin-bottom: 3%;
+    }
+    .slide-insight .proposal-box p {
+      font-size: clamp(0.5rem, 0.95vw, 0.82rem);
+      color: #475569;
+      line-height: 1.6;
+    }
+    .slide-insight .remaining {
+      background: #FFF3E0;
+      border-radius: 8px;
+      padding: 2% 3%;
+      font-size: clamp(0.5rem, 0.9vw, 0.78rem);
+      color: #744210;
+      grid-column: 1 / -1;
+    }
+    .slide-insight .footer-line {
+      margin-top: auto;
+      padding-top: 2%;
+      border-top: 1px solid #E2E8F0;
+      font-size: clamp(0.4rem, 0.7vw, 0.55rem);
+      color: #94A3B8;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Slide 6: Closing */
+    .slide-closing {
+      background: linear-gradient(160deg, #023E8A 0%, #0077B6 50%, #48CAE4 100%);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8%;
+      position: relative;
+    }
+    .slide-closing::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 30%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='rgba(255,255,255,0.06)' d='M0,64 C360,120 720,0 1080,64 C1260,96 1380,80 1440,64 L1440,120 L0,120Z'/%3E%3C/svg%3E") no-repeat bottom;
+      background-size: cover;
+    }
+    .slide-closing .thanks {
+      font-size: clamp(1.5rem, 4.5vw, 3rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 3%;
+      position: relative;
+    }
+    .slide-closing .feedback {
+      font-size: clamp(0.7rem, 1.5vw, 1.1rem);
+      color: #90E0EF;
+      margin-bottom: 5%;
+      position: relative;
+    }
+    .slide-closing .team-label {
+      font-size: clamp(0.8rem, 1.8vw, 1.3rem);
+      color: #fff;
+      border-top: 2px solid rgba(255,255,255,0.3);
+      padding-top: 3%;
+      position: relative;
+    }
+    .slide-closing .hashtag {
+      position: absolute;
+      bottom: 8%;
+      font-size: clamp(0.5rem, 1vw, 0.8rem);
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ===== Fullscreen / Presentation Mode ===== */
+    .presentation-mode {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .presentation-mode.active { display: flex; }
+    .presentation-mode .slide-container {
+      max-width: 100vw;
+      max-height: 100vh;
+      width: 100vw;
+      height: calc(100vw * 9 / 16);
+      border-radius: 0;
+    }
+    @media (min-aspect-ratio: 16/9) {
+      .presentation-mode .slide-container {
+        height: 100vh;
+        width: calc(100vh * 16 / 9);
+      }
+    }
+    .presentation-mode .exit-btn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 10000;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .presentation-mode:hover .exit-btn { opacity: 1; }
+
+    /* Share link */
+    .share-url {
+      margin-top: 12px;
+      padding: 10px;
+      background: #F1F5F9;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      word-break: break-all;
+      color: #475569;
+      display: none;
+    }
+    .share-url.visible { display: block; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .editor-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: auto;
+      }
+      .preview-panel {
+        min-height: 50vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="editor-layout">
+  <!-- Editor Panel -->
+  <div class="editor-panel">
+    <h1>チーム発表スライドビルダー</h1>
+    <p class="subtitle">フォームに入力するとスライドがリアルタイムで生成されます</p>
+
+    <div class="form-section">
+      <h3><span class="num">1</span> 表紙</h3>
+      <label>チーム名</label>
+      <select id="teamName" onchange="updateSlides()">
+        <option value="">選択してください</option>
+        <option value="チーム A">チーム A</option>
+        <option value="チーム B">チーム B</option>
+        <option value="チーム C">チーム C</option>
+        <option value="チーム D">チーム D</option>
+        <option value="チーム E">チーム E</option>
+        <option value="チーム F">チーム F</option>
+      </select>
+      <label>メンバー（カンマ区切り）</label>
+      <input type="text" id="members" placeholder="例: 田中, 山田, 佐藤, 鈴木" oninput="updateSlides()">
+    </div>
+
+    <div class="form-section">
+      <h3><span class="num">2</span> 取り組んだ問い</h3>
+      <label>分析テーマ</label>
+      <input type="text" id="question" placeholder="例: 旧盆に何が売れた？通常の何倍？" oninput="updateSlides()">
+      <label>背景・きっかけ</label>
+      <textarea id="context" rows="2" placeholder="例: 旧盆は沖縄最大の行事。売上への影響を定量的に分析したい" oninput="updateSlides()"></textarea>
+    </div>
+
+    <div class="form-section">
+      <h3><span class="num">3</span> 分析アプローチ</h3>
+      <label>仮説</label>
+      <textarea id="hypothesis" rows="2" placeholder="例: 旧盆期間は食品の売上が通常の2倍以上になる" oninput="updateSlides()"></textarea>
+      <label>分析手法</label>
+      <textarea id="method" rows="2" placeholder="例: 旧盆前後の日別売上を比較し、商品カテゴリ別の増加率を算出" oninput="updateSlides()"></textarea>
+      <label>使用した SQL / AI への質問</label>
+      <textarea id="sql" rows="4" placeholder="SELECT ... FROM meetup8.customer_sales_details ..." oninput="updateSlides()" style="font-family:'SF Mono','Fira Code',monospace; font-size:0.8rem;"></textarea>
+    </div>
+
+    <div class="form-section">
+      <h3><span class="num">4</span> 発見したこと</h3>
+      <label>発見 1</label>
+      <input type="text" id="finding1" placeholder="例: 旧盆ウークイ（9/6）が月間最高売上8.6億円" oninput="updateSlides()">
+      <label>発見 2</label>
+      <input type="text" id="finding2" placeholder="例: 旧盆前日の買い出しが最も多い" oninput="updateSlides()">
+      <label>発見 3</label>
+      <input type="text" id="finding3" placeholder="例: 旧盆明けの9/7は売上が急落（4.2億円）" oninput="updateSlides()">
+    </div>
+
+    <div class="form-section">
+      <h3><span class="num">5</span> 考察と提案</h3>
+      <label>データから見えたこと（改行で箇条書き）</label>
+      <textarea id="insights" rows="3" placeholder="旧盆は売上が通常の2倍&#10;食品・お供え物が特に伸びる&#10;前日買い出しが行動パターン" oninput="updateSlides()"></textarea>
+      <label>サンエーへの提案</label>
+      <textarea id="proposal" rows="3" placeholder="例: 旧盆2日前からの在庫積み増し、お供えセットの事前予約制度の導入" oninput="updateSlides()"></textarea>
+      <label>残った疑問・もっと調べたいこと</label>
+      <input type="text" id="remaining" placeholder="例: 地域ごとの旧盆売上の違い" oninput="updateSlides()">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-accent" onclick="startPresentation()">&#9654; プレゼン開始</button>
+      <button class="btn btn-primary" onclick="generateShareLink()">&#128279; 共有リンク生成</button>
+      <button class="btn btn-secondary" onclick="saveToLocalStorage()">&#128190; 保存</button>
+      <button class="btn btn-secondary" onclick="loadFromLocalStorage()">&#128194; 復元</button>
+    </div>
+    <div class="share-url" id="shareUrl"></div>
+  </div>
+
+  <!-- Preview Panel -->
+  <div class="preview-panel">
+    <div class="preview-nav">
+      <button onclick="prevSlide()">&#9664;</button>
+      <span class="page-info" id="pageInfo">1 / 6</span>
+      <button onclick="nextSlide()">&#9654;</button>
+    </div>
+    <div class="slide-container" id="previewSlides">
+      <!-- Slides rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Presentation Mode Overlay -->
+<div class="presentation-mode" id="presentationMode">
+  <button class="exit-btn" onclick="exitPresentation()">ESC: 終了</button>
+  <div class="slide-container" id="presentationSlides"></div>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const totalSlides = 6;
+
+  // Team themes
+  const teamThemes = {
+    'チーム A': { theme: '旧盆に何が売れた？通常の何倍？' },
+    'チーム B': { theme: '曜日で売上に差はある？「日曜が一番売れる」は本当？' },
+    'チーム C': { theme: '一番売れている商品は？時期で変わる？' },
+    'チーム D': { theme: '台風が来ると何が売れる？（8/14前後）' },
+    'チーム E': { theme: '旧盆が4日間ある店舗は？' },
+    'チーム F': { theme: '営業時間が早く終わる日は？' },
+  };
+
+  // Auto-fill question when team is selected
+  document.getElementById('teamName').addEventListener('change', function() {
+    var team = this.value;
+    if (teamThemes[team] && !document.getElementById('question').value) {
+      document.getElementById('question').value = teamThemes[team].theme;
+      updateSlides();
+    }
+  });
+
+  function getValues() {
+    return {
+      teamName: document.getElementById('teamName').value || 'チーム名',
+      members: document.getElementById('members').value || '＿＿＿ / ＿＿＿ / ＿＿＿',
+      question: document.getElementById('question').value || '私たちが取り組んだ問い',
+      context: document.getElementById('context').value || '',
+      hypothesis: document.getElementById('hypothesis').value || 'ここに仮説を記入',
+      method: document.getElementById('method').value || '使用した分析手法',
+      sql: document.getElementById('sql').value || '-- ここに SQL を貼り付け\nSELECT ...',
+      finding1: document.getElementById('finding1').value || '発見 1',
+      finding2: document.getElementById('finding2').value || '発見 2',
+      finding3: document.getElementById('finding3').value || '発見 3',
+      insights: document.getElementById('insights').value || 'データから見えたこと',
+      proposal: document.getElementById('proposal').value || 'サンエーへの提案やアイデア',
+      remaining: document.getElementById('remaining').value || '',
+    };
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderSlides(container) {
+    var v = getValues();
+    var insightItems = v.insights.split('\n').filter(function(x){ return x.trim(); });
+    var insightHtml = insightItems.map(function(item) {
+      return '<li>' + escapeHtml(item.trim()) + '</li>';
+    }).join('') || '<li>データから見えたこと</li>';
+
+    container.innerHTML = [
+      // Slide 1: Cover
+      '<div class="slide slide-cover' + (currentSlide === 0 ? ' active' : '') + '">' +
+        '<div class="event-label">Jagu\'e\'r 沖縄分科会 &times; サンエー &times; 琉球大学</div>' +
+        '<div class="team-name">' + escapeHtml(v.teamName) + '</div>' +
+        '<div class="event-title">データで考える、沖縄の「ちょうどいい」と「もっといい」</div>' +
+        '<div class="presentation-type">成果発表</div>' +
+        '<div class="date">2026.04.11</div>' +
+        '<div class="members">メンバー: ' + escapeHtml(v.members) + '</div>' +
+      '</div>',
+
+      // Slide 2: Question
+      '<div class="slide slide-question' + (currentSlide === 1 ? ' active' : '') + '">' +
+        '<div class="label">QUESTION</div>' +
+        '<div class="question-text">' + escapeHtml(v.question) + '</div>' +
+        (v.context ? '<div class="context">' + escapeHtml(v.context) + '</div>' : '') +
+        '<div class="footer-line"><span>データで考える、沖縄の「ちょうどいい」と「もっといい」</span><span>2</span></div>' +
+      '</div>',
+
+      // Slide 3: Approach
+      '<div class="slide slide-approach' + (currentSlide === 2 ? ' active' : '') + '">' +
+        '<div class="label">APPROACH</div>' +
+        '<div class="title">分析アプローチ</div>' +
+        '<div class="steps">' +
+          '<div class="step"><div class="step-num">1</div><h4>仮説</h4><p>' + escapeHtml(v.hypothesis) + '</p><span class="arrow">&#x27A1;</span></div>' +
+          '<div class="step"><div class="step-num">2</div><h4>分析</h4><p>' + escapeHtml(v.method) + '</p><span class="arrow">&#x27A1;</span></div>' +
+          '<div class="step"><div class="step-num">3</div><h4>検証</h4><p>結果から仮説を検証</p></div>' +
+        '</div>' +
+        '<div class="code-block">' + escapeHtml(v.sql) + '</div>' +
+        '<div class="footer-line"><span>データで考える、沖縄の「ちょうどいい」と「もっといい」</span><span>3</span></div>' +
+      '</div>',
+
+      // Slide 4: Findings
+      '<div class="slide slide-findings' + (currentSlide === 3 ? ' active' : '') + '">' +
+        '<div class="label">FINDINGS</div>' +
+        '<div class="title">発見したこと</div>' +
+        '<div class="findings-list">' +
+          '<div class="finding"><span class="finding-icon">&#128161;</span><div class="finding-content"><h4>発見 1</h4><p>' + escapeHtml(v.finding1) + '</p></div></div>' +
+          '<div class="finding"><span class="finding-icon">&#128200;</span><div class="finding-content"><h4>発見 2</h4><p>' + escapeHtml(v.finding2) + '</p></div></div>' +
+          '<div class="finding"><span class="finding-icon">&#128269;</span><div class="finding-content"><h4>発見 3</h4><p>' + escapeHtml(v.finding3) + '</p></div></div>' +
+        '</div>' +
+        '<div class="footer-line"><span>データで考える、沖縄の「ちょうどいい」と「もっといい」</span><span>4</span></div>' +
+      '</div>',
+
+      // Slide 5: Insight
+      '<div class="slide slide-insight' + (currentSlide === 4 ? ' active' : '') + '">' +
+        '<div class="label">INSIGHT</div>' +
+        '<div class="title">考察と提案</div>' +
+        '<div class="insight-grid">' +
+          '<div class="insight-left"><h4>データから見えたこと</h4><ul>' + insightHtml + '</ul></div>' +
+          '<div class="proposal-box"><h4>&#128172; 提案</h4><p>' + escapeHtml(v.proposal) + '</p></div>' +
+          (v.remaining ? '<div class="remaining">&#129300; 残った疑問: ' + escapeHtml(v.remaining) + '</div>' : '') +
+        '</div>' +
+        '<div class="footer-line"><span>データで考える、沖縄の「ちょうどいい」と「もっといい」</span><span>5</span></div>' +
+      '</div>',
+
+      // Slide 6: Closing
+      '<div class="slide slide-closing' + (currentSlide === 5 ? ' active' : '') + '">' +
+        '<div class="thanks">ありがとうございました</div>' +
+        '<div class="feedback">ご質問・フィードバックをお願いします！</div>' +
+        '<div class="team-label">' + escapeHtml(v.teamName) + '</div>' +
+        '<div class="hashtag">#Jauger_okinawa</div>' +
+      '</div>',
+    ].join('');
+  }
+
+  function updateSlides() {
+    renderSlides(document.getElementById('previewSlides'));
+    renderSlides(document.getElementById('presentationSlides'));
+    document.getElementById('pageInfo').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+  }
+
+  function goToSlide(n) {
+    currentSlide = Math.max(0, Math.min(totalSlides - 1, n));
+    updateSlides();
+  }
+  function prevSlide() { goToSlide(currentSlide - 1); }
+  function nextSlide() { goToSlide(currentSlide + 1); }
+
+  // Presentation mode
+  function startPresentation() {
+    document.getElementById('presentationMode').classList.add('active');
+    updateSlides();
+  }
+  function exitPresentation() {
+    document.getElementById('presentationMode').classList.remove('active');
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { exitPresentation(); return; }
+    if (document.getElementById('presentationMode').classList.contains('active') ||
+        e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+      }
+      return;
+    }
+    if (e.key === 'ArrowRight') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  // Share link
+  function generateShareLink() {
+    var v = getValues();
+    var params = new URLSearchParams();
+    Object.keys(v).forEach(function(k) { if (v[k]) params.set(k, v[k]); });
+    var url = window.location.origin + window.location.pathname + '?' + params.toString();
+    var el = document.getElementById('shareUrl');
+    el.innerHTML = '<strong>共有リンク:</strong><br>' + escapeHtml(url) + '<br><br><button class="btn btn-secondary" onclick="navigator.clipboard.writeText(\'' + url.replace(/'/g, "\\'") + '\');this.textContent=\'コピーしました！\'">クリップボードにコピー</button>';
+    el.classList.add('visible');
+  }
+
+  // LocalStorage
+  function saveToLocalStorage() {
+    var v = getValues();
+    localStorage.setItem('slideBuilder_' + v.teamName, JSON.stringify(v));
+    alert(v.teamName + ' のデータを保存しました');
+  }
+  function loadFromLocalStorage() {
+    var team = document.getElementById('teamName').value;
+    if (!team) { alert('先にチーム名を選択してください'); return; }
+    var data = localStorage.getItem('slideBuilder_' + team);
+    if (!data) { alert(team + ' の保存データが見つかりません'); return; }
+    var v = JSON.parse(data);
+    document.getElementById('members').value = v.members || '';
+    document.getElementById('question').value = v.question || '';
+    document.getElementById('context').value = v.context || '';
+    document.getElementById('hypothesis').value = v.hypothesis || '';
+    document.getElementById('method').value = v.method || '';
+    document.getElementById('sql').value = v.sql || '';
+    document.getElementById('finding1').value = v.finding1 || '';
+    document.getElementById('finding2').value = v.finding2 || '';
+    document.getElementById('finding3').value = v.finding3 || '';
+    document.getElementById('insights').value = v.insights || '';
+    document.getElementById('proposal').value = v.proposal || '';
+    document.getElementById('remaining').value = v.remaining || '';
+    updateSlides();
+  }
+
+  // Load from URL params
+  function loadFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.size === 0) return;
+    var fields = ['teamName','members','question','context','hypothesis','method','sql',
+                  'finding1','finding2','finding3','insights','proposal','remaining'];
+    fields.forEach(function(f) {
+      var val = params.get(f);
+      if (val) document.getElementById(f).value = val;
+    });
+    // Check for presentation mode param
+    if (params.get('present') === '1') {
+      setTimeout(startPresentation, 100);
+    }
+    updateSlides();
+  }
+
+  // Initialize
+  loadFromUrl();
+  updateSlides();
+</script>
+
+</body>
+</html>
