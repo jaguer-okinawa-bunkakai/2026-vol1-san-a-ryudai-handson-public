@@ -324,6 +324,7 @@
         <ul class="nav-links" id="navLinks">
           <li><a href="#overview">概要</a></li>
           <li><a href="#schedule">スケジュール</a></li>
+          <li><a href="#slides">スライド</a></li>
           <li><a href="#setup">セットアップ</a></li>
           <li><a href="#content">コンテンツ</a></li>
           <li><a href="#architecture">アーキテクチャ</a></li>
@@ -465,6 +466,71 @@
           <span class="event-desc">データの話の続きはビーチで！申込フォームで参加可否を選択してください。</span>
         </li>
       </ul>
+    </div>
+  </section>
+
+  <!-- Slides -->
+  <section class="section" id="slides">
+    <div class="section-inner">
+      <span class="section-label">Slides</span>
+      <h2 class="section-title">ハンズオン スライド</h2>
+      <p class="section-desc">当日の進行スライドです。セットアップ手順・チーム課題・発表ガイドを含みます。<a href="marp/handson.html" target="_blank">全画面で開く</a></p>
+
+      <div style="position:relative; width:100%; padding-top:56.25%; border-radius:16px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+        <iframe src="marp/handson.html" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
+      </div>
+
+      <!-- 発表テンプレート -->
+      <h3 style="font-size:1.15rem; font-weight:800; color:var(--deep-sea); margin:48px 0 12px;">チーム発表用スライドテンプレート</h3>
+      <p style="font-size:0.9rem; color:#64748B; margin-bottom:20px;">
+        成果発表（各チーム3分）で使用するテンプレートです。各スライドを参考に、チームの分析結果をまとめてください。
+        <a href="slides/presentation_template.pdf" download style="font-weight:700;">PDF をダウンロード</a>
+      </p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <img src="slides/slide_01_cover.png" alt="表紙: チーム名・メンバー" style="width:100%; display:block;">
+          <div style="padding:12px 16px; background:#fff;">
+            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">1. 表紙</p>
+            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">チーム名とメンバーを記入</p>
+          </div>
+        </div>
+        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <img src="slides/slide_02_question.png" alt="取り組んだ問い" style="width:100%; display:block;">
+          <div style="padding:12px 16px; background:#fff;">
+            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">2. 取り組んだ問い</p>
+            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">分析テーマと背景を記入</p>
+          </div>
+        </div>
+        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <img src="slides/slide_03_approach.png" alt="分析アプローチ" style="width:100%; display:block;">
+          <div style="padding:12px 16px; background:#fff;">
+            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">3. 分析アプローチ</p>
+            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">仮説 → 分析 → 検証の流れと SQL</p>
+          </div>
+        </div>
+        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <img src="slides/slide_04_findings.png" alt="発見したこと" style="width:100%; display:block;">
+          <div style="padding:12px 16px; background:#fff;">
+            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">4. 発見したこと</p>
+            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">3つの発見 + グラフ/スクリーンショット</p>
+          </div>
+        </div>
+        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <img src="slides/slide_05_insight.png" alt="考察と提案" style="width:100%; display:block;">
+          <div style="padding:12px 16px; background:#fff;">
+            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">5. 考察と提案</p>
+            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">データから見えたこと + サンエーへの提案</p>
+          </div>
+        </div>
+        <div style="border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <img src="slides/slide_06_closing.png" alt="ありがとうございました" style="width:100%; display:block;">
+          <div style="padding:12px 16px; background:#fff;">
+            <p style="font-size:0.82rem; font-weight:700; color:var(--deep-sea); margin:0;">6. クロージング</p>
+            <p style="font-size:0.78rem; color:#64748B; margin:4px 0 0;">質疑応答</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
