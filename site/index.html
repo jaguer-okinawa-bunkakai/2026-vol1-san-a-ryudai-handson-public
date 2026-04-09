@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jagu'e'r 沖縄分科会 - クラウドの力で、沖縄の未来をつくる</title>
-  <meta name="description" content="Jagu'e'r 沖縄分科会は、Google Cloud 公式ユーザー会 Jagu'e'r の地域分科会です。沖縄からGoogle Cloudを活用した地域DX推進、多様なコラボレーション、気軽に学べる勉強会を展開しています。">
+  <title>データで考える、沖縄の「ちょうどいい」と「もっといい」 - Jagu'e'r 沖縄分科会 ハンズオン</title>
+  <meta name="description" content="2026/04/11 Jagu'e'r 沖縄分科会 × サンエー × 琉球大学 特別コラボハンズオン。サンエーの実PosデータをBigQuery・Geminiで分析する体験型ワークショップ。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <style>
-    /* ===== Reset & Base ===== */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -19,10 +19,9 @@
       line-height: 1.8;
       overflow-x: hidden;
     }
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; height: auto; }
+    a { color: #0077B6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    /* ===== Color Variables ===== */
     :root {
       --ocean: #0077B6;
       --ocean-light: #48CAE4;
@@ -35,887 +34,301 @@
       --cloud: #FAFCFF;
       --charcoal: #2D3748;
       --indigo: #1B3A5C;
-      --cream: #F5E6CC;
     }
 
-    /* ===== Minsaa Pattern (SVG background) ===== */
-    .minsaa-border {
-      height: 12px;
-      background: repeating-linear-gradient(
-        90deg,
-        var(--indigo) 0px, var(--indigo) 8px,
-        var(--cream) 8px, var(--cream) 12px,
-        var(--indigo) 12px, var(--indigo) 20px,
-        var(--cream) 20px, var(--cream) 28px,
-        var(--indigo) 28px, var(--indigo) 36px,
-        var(--cream) 36px, var(--cream) 48px,
-        var(--indigo) 48px, var(--indigo) 56px,
-        var(--cream) 56px, var(--cream) 60px,
-        var(--indigo) 60px, var(--indigo) 68px,
-        var(--cream) 68px, var(--cream) 76px,
-        var(--indigo) 76px, var(--indigo) 84px,
-        var(--cream) 84px, var(--cream) 88px,
-        var(--indigo) 88px, var(--indigo) 96px,
-        var(--cream) 96px, var(--cream) 108px
-      );
-    }
-
-    /* ===== Header / Navigation ===== */
+    /* Header */
     .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: rgba(2, 62, 138, 0.92);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(2, 62, 138, 0.95);
       backdrop-filter: blur(12px);
-      transition: background 0.3s;
     }
     .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between; height: 60px;
     }
     .header-logo {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-weight: 700; font-size: 0.95rem; color: #fff;
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
     }
-    .header-logo img {
-      height: 36px;
-      width: auto;
-      background: #fff;
-      border-radius: 8px;
-      padding: 4px 10px;
-    }
-    .header-logo .logo-sub {
-      font-size: 0.75rem;
-      font-weight: 400;
-      opacity: 0.8;
-      border-left: 1px solid rgba(255,255,255,0.3);
-      padding-left: 10px;
-    }
+    .header-logo:hover { text-decoration: none; }
     .nav-links {
-      display: flex;
-      gap: 28px;
-      list-style: none;
+      display: flex; gap: 24px; list-style: none;
     }
     .nav-links a {
-      color: rgba(255,255,255,0.9);
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: color 0.2s;
-      position: relative;
+      color: rgba(255,255,255,0.9); font-size: 0.82rem; font-weight: 500; text-decoration: none;
     }
-    .nav-links a:hover { color: var(--ocean-pale); }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--ocean-pale);
-      transition: width 0.3s;
-    }
-    .nav-links a:hover::after { width: 100%; }
+    .nav-links a:hover { color: var(--ocean-pale); text-decoration: none; }
 
     .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 4px;
+      display: none; flex-direction: column; gap: 5px; cursor: pointer;
+      background: none; border: none; padding: 4px;
     }
-    .hamburger span {
-      width: 24px;
-      height: 2px;
-      background: #fff;
-      transition: 0.3s;
-    }
+    .hamburger span { width: 22px; height: 2px; background: #fff; transition: 0.3s; }
 
-    /* ===== Hero ===== */
+    /* Hero */
     .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background: linear-gradient(160deg, var(--deep-sea) 0%, var(--ocean) 40%, var(--ocean-light) 70%, var(--ocean-pale) 100%);
-      overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1633311765840-d2a5476f55a2?auto=format&fit=crop&w=1920&q=80');
-      background-size: cover;
-      background-position: center 60%;
-      opacity: 0.25;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, rgba(2,62,138,0.5) 0%, rgba(0,119,182,0.3) 50%, rgba(2,62,138,0.6) 100%),
-        radial-gradient(ellipse at 20% 80%, rgba(230, 57, 70, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(42, 157, 143, 0.08) 0%, transparent 50%);
-      z-index: 1;
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      padding: 120px 24px 160px;
-    }
-    .hero-logo {
-      margin-bottom: 32px;
-    }
-    .hero-logo img {
-      height: 80px;
-      width: auto;
-      background: #fff;
-      border-radius: 16px;
-      padding: 12px 24px;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-    }
-    .hero-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 100px;
-      padding: 6px 20px;
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 24px;
-      backdrop-filter: blur(4px);
+      min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center;
+      background: linear-gradient(160deg, var(--deep-sea) 0%, var(--ocean) 40%, var(--ocean-light) 80%);
+      padding: 120px 24px 80px;
     }
     .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 8px;
-      letter-spacing: 0.02em;
+      font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 900; color: #fff;
+      margin-bottom: 12px; letter-spacing: 0.02em;
     }
     .hero h1 .accent { color: var(--ocean-pale); }
     .hero .subtitle {
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
-      color: rgba(255,255,255,0.85);
-      font-weight: 300;
-      margin-bottom: 40px;
-    }
-    .hero .hero-tagline {
-      font-size: 0.95rem;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 40px;
-      max-width: 540px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .hero-cta {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 32px;
-      border-radius: 100px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s;
-      border: none;
-    }
-    .btn-primary {
-      background: #fff;
-      color: var(--deep-sea);
-    }
-    .btn-primary:hover {
-      background: var(--ocean-pale);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    }
-    .btn-outline {
-      background: transparent;
-      color: #fff;
-      border: 2px solid rgba(255,255,255,0.4);
-    }
-    .btn-outline:hover {
-      border-color: #fff;
-      background: rgba(255,255,255,0.1);
-      transform: translateY(-2px);
-    }
-
-    /* Wave SVG */
-    .wave-container {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      overflow: hidden;
-      line-height: 0;
-    }
-    .wave-container svg {
-      display: block;
-      width: 100%;
-      height: 80px;
-    }
-
-    /* Hibiscus decorations */
-    .hibiscus {
-      position: absolute;
-      opacity: 0.06;
-      pointer-events: none;
-    }
-    .hibiscus-1 { top: 15%; right: 8%; width: 200px; transform: rotate(15deg); }
-    .hibiscus-2 { bottom: 20%; left: 5%; width: 160px; transform: rotate(-20deg); }
-
-    /* ===== Section Common ===== */
-    .section {
-      padding: 100px 24px;
-    }
-    .section-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .section-label {
-      display: inline-block;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--ocean);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: 8px;
-    }
-    .section-title {
-      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-      font-weight: 900;
-      color: var(--deep-sea);
-      margin-bottom: 16px;
-    }
-    .section-desc {
-      font-size: 1rem;
-      color: #64748B;
-      max-width: 640px;
-      margin-bottom: 48px;
-    }
-
-    /* ===== About / MVV ===== */
-    .about {
-      background: var(--cloud);
-    }
-    .mvv-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: center;
-      margin-bottom: 64px;
-    }
-    .mvv-text h3 {
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: var(--deep-sea);
-      margin-bottom: 16px;
-    }
-    .mvv-text p {
-      color: #475569;
-      line-height: 2;
-    }
-    .mvv-visual {
-      background: linear-gradient(135deg, var(--ocean-pale) 0%, var(--ocean-light) 100%);
-      border-radius: 24px;
-      padding: 48px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .mvv-visual::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent 0px,
-        transparent 16px,
-        rgba(27, 58, 92, 0.04) 16px,
-        rgba(27, 58, 92, 0.04) 18px
-      );
-    }
-    .mvv-visual .mvv-icon {
-      font-size: 4rem;
-      margin-bottom: 16px;
-      position: relative;
-    }
-    .mvv-visual .mvv-quote {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--deep-sea);
-      position: relative;
-    }
-    .mvv-visual .mvv-quote-sub {
-      font-size: 0.85rem;
-      color: var(--indigo);
-      opacity: 0.7;
-      margin-top: 8px;
-      position: relative;
-    }
-
-    /* Mission / Vision / Values cards */
-    .mvv-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-bottom: 64px;
-    }
-    .mvv-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 36px 28px;
-      border: 1px solid #E2E8F0;
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-    .mvv-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0, 119, 182, 0.1);
-      border-color: var(--ocean-light);
-    }
-    .mvv-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-    }
-    .mvv-card:nth-child(1)::before { background: var(--ocean); }
-    .mvv-card:nth-child(2)::before { background: var(--coral); }
-    .mvv-card:nth-child(3)::before { background: var(--tropical-green); }
-
-    .mvv-card-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-    }
-    .mvv-card:nth-child(1) .mvv-card-icon { background: rgba(0,119,182,0.1); }
-    .mvv-card:nth-child(2) .mvv-card-icon { background: rgba(230,57,70,0.1); }
-    .mvv-card:nth-child(3) .mvv-card-icon { background: rgba(42,157,143,0.1); }
-
-    .mvv-card h4 {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 8px;
-    }
-    .mvv-card:nth-child(1) h4 { color: var(--ocean); }
-    .mvv-card:nth-child(2) h4 { color: var(--coral); }
-    .mvv-card:nth-child(3) h4 { color: var(--tropical-green); }
-
-    .mvv-card h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--charcoal);
-      margin-bottom: 12px;
-    }
-    .mvv-card p {
-      font-size: 0.9rem;
-      color: #64748B;
-      line-height: 1.8;
-    }
-
-    /* ===== Three Pillars ===== */
-    .pillars {
-      background: var(--sand);
-    }
-    .pillar-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 28px;
-    }
-    .pillar-card {
-      background: #fff;
-      border-radius: 20px;
-      padding: 40px 28px;
-      text-align: center;
-      transition: all 0.3s;
-      border: 1px solid rgba(0,0,0,0.04);
-    }
-    .pillar-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 16px 48px rgba(0, 119, 182, 0.08);
-    }
-    .pillar-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 20px;
-      margin: 0 auto 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-    }
-    .pillar-card:nth-child(1) .pillar-icon {
-      background: linear-gradient(135deg, var(--ocean-pale), var(--ocean-light));
-    }
-    .pillar-card:nth-child(2) .pillar-icon {
-      background: linear-gradient(135deg, #FECDD3, #FCA5A5);
-    }
-    .pillar-card:nth-child(3) .pillar-icon {
-      background: linear-gradient(135deg, #A7F3D0, #6EE7B7);
-    }
-    .pillar-card h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--charcoal);
-      margin-bottom: 12px;
-    }
-    .pillar-card p {
-      font-size: 0.9rem;
-      color: #64748B;
-      line-height: 1.7;
-    }
-
-    /* ===== Members ===== */
-    .members {
-      background: var(--cloud);
-    }
-    .member-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 24px;
-    }
-    .member-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 28px 24px;
-      border: 1px solid #E2E8F0;
-      transition: all 0.3s;
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-    .member-card:hover {
-      border-color: var(--ocean-light);
-      box-shadow: 0 8px 24px rgba(0, 119, 182, 0.08);
-      transform: translateY(-2px);
-    }
-    .member-avatar {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      object-fit: cover;
-      border: 3px solid #E2E8F0;
-    }
-    .member-avatar-placeholder {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #fff;
-      background: linear-gradient(135deg, var(--ocean), var(--ocean-light));
-    }
-    .member-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .member-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--charcoal);
-      margin-bottom: 2px;
-    }
-    .member-role {
-      font-size: 0.8rem;
-      color: var(--ocean);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .member-org {
-      font-size: 0.75rem;
-      color: #94A3B8;
-      margin-bottom: 10px;
-      display: block;
-    }
-    .member-bio {
-      font-size: 0.8rem;
-      color: #64748B;
-      line-height: 1.6;
-      margin-bottom: 10px;
-    }
-    .member-highlights {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .member-tag {
-      font-size: 0.65rem;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 100px;
-      background: rgba(0, 119, 182, 0.07);
-      color: var(--ocean);
-      white-space: nowrap;
-    }
-    .member-tag.speaker {
-      background: rgba(230, 57, 70, 0.08);
-      color: var(--coral);
-    }
-    .member-tag.organizer {
-      background: rgba(42, 157, 143, 0.08);
-      color: var(--tropical-green);
-    }
-    .member-tag.mc {
-      background: rgba(244, 162, 97, 0.12);
-      color: #C77B2F;
-    }
-
-    /* ===== Photo Banner ===== */
-    .photo-banner {
-      position: relative;
-      height: 320px;
-      overflow: hidden;
-    }
-    .photo-banner img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .photo-banner-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(2,62,138,0.15) 0%, rgba(0,119,182,0.25) 100%);
-    }
-    .photo-banner-caption {
-      position: absolute;
-      bottom: 16px;
-      right: 20px;
-      font-size: 0.7rem;
-      color: rgba(255,255,255,0.7);
-      background: rgba(0,0,0,0.3);
-      padding: 4px 10px;
-      border-radius: 6px;
-      backdrop-filter: blur(4px);
-    }
-    @media (max-width: 768px) {
-      .photo-banner { height: 200px; }
-    }
-
-    /* ===== News / RSS Feed ===== */
-    .news {
-      background: var(--sand);
-    }
-    .feed-tabs {
-      display: flex;
-      gap: 8px;
+      font-size: clamp(0.9rem, 2vw, 1.15rem); color: rgba(255,255,255,0.85);
+      font-weight: 400; margin-bottom: 16px;
+    }
+    .hero .meta-info {
+      display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
       margin-bottom: 32px;
     }
-    .feed-tab {
-      padding: 8px 20px;
-      border-radius: 100px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: 2px solid #E2E8F0;
-      background: #fff;
-      color: #64748B;
-      transition: all 0.2s;
+    .hero .meta-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 100px; padding: 6px 18px; font-size: 0.82rem;
+      color: rgba(255,255,255,0.95); backdrop-filter: blur(4px);
     }
-    .feed-tab.active {
-      background: var(--deep-sea);
-      color: #fff;
-      border-color: var(--deep-sea);
+    .hero-cta {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 20px;
     }
-    .feed-tab:hover:not(.active) {
-      border-color: var(--ocean);
-      color: var(--ocean);
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; border-radius: 100px; font-size: 0.88rem;
+      font-weight: 700; cursor: pointer; transition: all 0.3s; border: none; text-decoration: none;
     }
-    .feed-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 24px;
+    .btn:hover { text-decoration: none; }
+    .btn-primary { background: #fff; color: var(--deep-sea); }
+    .btn-primary:hover { background: var(--ocean-pale); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.4); }
+    .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+    /* Section */
+    .section { padding: 80px 24px; }
+    .section:nth-child(even) { background: #F0F7FF; }
+    .section-inner { max-width: 1000px; margin: 0 auto; }
+    .section-label {
+      display: inline-block; font-size: 0.72rem; font-weight: 700;
+      color: var(--ocean); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px;
     }
-    .feed-card {
-      background: #fff;
-      border-radius: 16px;
-      overflow: hidden;
+    .section-title {
+      font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 900;
+      color: var(--deep-sea); margin-bottom: 12px;
+    }
+    .section-desc {
+      font-size: 0.95rem; color: #64748B; max-width: 640px; margin-bottom: 36px;
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; margin-top: 24px;
+    }
+    .card {
+      background: #fff; border-radius: 16px; padding: 28px; border: 1px solid #E2E8F0;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .card-icon { font-size: 2rem; margin-bottom: 12px; }
+    .card h3 { font-size: 1.05rem; font-weight: 700; color: var(--deep-sea); margin-bottom: 8px; }
+    .card p { font-size: 0.88rem; color: #64748B; line-height: 1.7; }
+
+    /* Table */
+    table {
+      width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem;
+      background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #E2E8F0;
+    }
+    th {
+      background: var(--deep-sea); color: #fff; padding: 12px 16px; text-align: left;
+      font-weight: 600; font-size: 0.82rem;
+    }
+    td { padding: 10px 16px; border-bottom: 1px solid #F1F5F9; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #F8FAFC; }
+
+    /* Timeline */
+    .timeline { list-style: none; position: relative; padding-left: 32px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 11px; top: 8px; bottom: 8px;
+      width: 3px; background: linear-gradient(to bottom, var(--ocean), var(--ocean-pale));
+      border-radius: 2px;
+    }
+    .timeline li {
+      position: relative; margin-bottom: 24px; padding-left: 20px;
+    }
+    .timeline li::before {
+      content: ''; position: absolute; left: -25px; top: 8px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--ocean); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ocean);
+    }
+    .timeline .time {
+      font-size: 0.78rem; font-weight: 700; color: var(--ocean);
+      display: block; margin-bottom: 2px;
+    }
+    .timeline .event-title {
+      font-size: 1rem; font-weight: 700; color: var(--charcoal);
+    }
+    .timeline .event-desc {
+      font-size: 0.85rem; color: #64748B; margin-top: 2px;
+    }
+
+    /* Step boxes */
+    .step-box {
+      background: #fff; border-radius: 16px; padding: 32px;
+      border: 1px solid #E2E8F0; margin-bottom: 28px;
+    }
+    .step-box h3 {
+      font-size: 1.15rem; font-weight: 800; color: var(--deep-sea);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+    }
+    .step-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--ocean); color: #fff; font-size: 0.85rem; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .step-box p, .step-box ul { font-size: 0.9rem; color: #475569; line-height: 1.8; }
+    .step-box ul { padding-left: 20px; margin-top: 8px; }
+    .step-box li { margin-bottom: 4px; }
+
+    /* Code */
+    pre {
+      background: #1E293B; color: #E2E8F0; padding: 20px; border-radius: 12px;
+      overflow-x: auto; font-size: 0.82rem; line-height: 1.7; margin: 16px 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    code {
+      background: #F1F5F9; color: var(--coral); padding: 2px 6px; border-radius: 4px;
+      font-size: 0.85em; font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    pre code { background: none; color: inherit; padding: 0; }
+
+    /* Checklist */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      padding: 10px 0; border-bottom: 1px solid #F1F5F9;
+      font-size: 0.9rem; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .checklist li::before {
+      content: ''; display: inline-block; width: 20px; height: 20px;
+      border: 2px solid var(--ocean); border-radius: 4px; flex-shrink: 0; margin-top: 2px;
+    }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      background: #fff; border-radius: 16px; padding: 32px;
+      border: 1px solid #E2E8F0; margin: 24px 0; overflow-x: auto;
+    }
+    .mermaid { text-align: center; }
+
+    /* Security layers */
+    .security-layers { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+    .security-layer {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px; border-radius: 12px; border-left: 4px solid;
+    }
+    .security-layer .layer-num {
+      width: 36px; height: 36px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.85rem; color: #fff; flex-shrink: 0;
+    }
+    .security-layer h4 { font-size: 0.92rem; font-weight: 700; }
+    .security-layer p { font-size: 0.82rem; color: #64748B; }
+    .sl-1 { background: #FFF5F5; border-color: #E53E3E; }
+    .sl-1 .layer-num { background: #E53E3E; }
+    .sl-2 { background: #FFFAF0; border-color: #DD6B20; }
+    .sl-2 .layer-num { background: #DD6B20; }
+    .sl-3 { background: #FFFFF0; border-color: #D69E2E; }
+    .sl-3 .layer-num { background: #D69E2E; }
+    .sl-4 { background: #F0FFF4; border-color: #38A169; }
+    .sl-4 .layer-num { background: #38A169; }
+    .sl-5 { background: #EBF8FF; border-color: #3182CE; }
+    .sl-5 .layer-num { background: #3182CE; }
+
+    /* FAQ */
+    .faq-item {
+      background: #fff; border-radius: 12px; padding: 20px 24px;
+      border: 1px solid #E2E8F0; margin-bottom: 12px;
+    }
+    .faq-q {
+      font-size: 0.92rem; font-weight: 700; color: var(--deep-sea);
+      margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px;
+    }
+    .faq-q::before { content: 'Q.'; color: var(--ocean); font-weight: 800; flex-shrink: 0; }
+    .faq-a { font-size: 0.88rem; color: #475569; padding-left: 28px; }
+
+    /* Data model */
+    .data-table-info {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .data-table-card {
+      background: #fff; border-radius: 12px; padding: 20px;
       border: 1px solid #E2E8F0;
-      transition: all 0.3s;
-      display: flex;
-      flex-direction: column;
     }
-    .feed-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0, 119, 182, 0.1);
+    .data-table-card h4 {
+      font-size: 0.95rem; font-weight: 700; color: var(--deep-sea); margin-bottom: 6px;
     }
-    .feed-card-body {
-      padding: 24px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+    .data-table-card .badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 700;
+      padding: 2px 10px; border-radius: 100px; margin-bottom: 8px;
     }
-    .feed-card-source {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .feed-card-source.note { color: var(--tropical-green); }
-    .feed-card-source.connpass { color: var(--coral); }
-    .feed-card-source.jaguer { color: var(--ocean); }
-    .feed-card h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--charcoal);
-      margin-bottom: 8px;
-      line-height: 1.5;
-      flex: 1;
-    }
-    .feed-card .feed-date {
-      font-size: 0.8rem;
-      color: #94A3B8;
-    }
-    .feed-card .feed-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--ocean);
-      margin-top: 12px;
-      transition: gap 0.2s;
-    }
-    .feed-card:hover .feed-link { gap: 8px; }
-    .feed-hidden { display: none; }
+    .badge-main { background: #FED7D7; color: #C53030; }
+    .badge-ref { background: #E9D8FD; color: #6B46C1; }
+    .badge-perf { background: #BEE3F8; color: #2B6CB0; }
+    .data-table-card p { font-size: 0.82rem; color: #64748B; }
 
-    /* ===== CTA / Join ===== */
-    .cta {
-      background: linear-gradient(135deg, var(--deep-sea) 0%, var(--ocean) 50%, var(--ocean-light) 100%);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .cta-bg {
-      position: absolute;
-      inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1610971250019-f677bc1300be?auto=format&fit=crop&w=1920&q=80');
-      background-size: cover;
-      background-position: center;
-      opacity: 0.18;
-    }
-    .cta::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background:
-        linear-gradient(180deg, rgba(2,62,138,0.6) 0%, rgba(0,119,182,0.4) 50%, rgba(2,62,138,0.7) 100%),
-        radial-gradient(ellipse at 30% 70%, rgba(244, 162, 97, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 70% 30%, rgba(230, 57, 70, 0.08) 0%, transparent 50%);
-    }
-    .cta .section-inner {
-      position: relative;
-      z-index: 2;
-    }
-    .cta .section-title {
-      color: #fff;
-    }
-    .cta .section-desc {
-      color: rgba(255,255,255,0.8);
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .cta-stats {
-      display: flex;
-      gap: 48px;
-      justify-content: center;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
-    .cta-stat {
-      text-align: center;
-    }
-    .cta-stat-number {
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: #fff;
-    }
-    .cta-stat-label {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.7);
-    }
-    .cta-buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .btn-coral {
-      background: var(--coral);
-      color: #fff;
-    }
-    .btn-coral:hover {
-      background: #C1303B;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(230, 57, 70, 0.3);
-    }
+    /* Anonymization table */
+    .anon-safe { color: #38A169; font-weight: 700; }
+    .anon-removed { color: #E53E3E; font-weight: 700; }
+    .anon-hash { color: #D69E2E; font-weight: 700; }
 
-    /* ===== Footer ===== */
+    /* Footer */
     .footer {
-      background: var(--deep-sea);
-      color: rgba(255,255,255,0.7);
-      padding: 48px 24px 24px;
+      background: var(--deep-sea); color: rgba(255,255,255,0.7);
+      padding: 40px 24px; text-align: center; font-size: 0.82rem;
     }
-    .footer-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 48px;
-      margin-bottom: 40px;
-    }
-    .footer-brand img {
-      height: 44px;
-      width: auto;
-      background: #fff;
-      border-radius: 10px;
-      padding: 6px 14px;
-      margin-bottom: 12px;
-    }
-    .footer-brand h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 12px;
-    }
-    .footer-brand p {
-      font-size: 0.85rem;
-      line-height: 1.8;
-    }
-    .footer-links h4 {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: rgba(255,255,255,0.5);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 16px;
-    }
-    .footer-links ul {
-      list-style: none;
-    }
-    .footer-links li {
-      margin-bottom: 10px;
-    }
-    .footer-links a {
-      font-size: 0.85rem;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--ocean-pale); }
-    .footer-bottom {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding-top: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .footer-bottom a { color: var(--ocean-light); }
-    .footer-bottom a:hover { color: var(--ocean-pale); }
+    .footer a { color: var(--ocean-pale); }
 
-    /* ===== Scroll Animations ===== */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px;
+      border-radius: 50%; background: var(--ocean); color: #fff; border: none;
+      font-size: 1.2rem; cursor: pointer; opacity: 0; transition: opacity 0.3s;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .scroll-top.visible { opacity: 1; }
 
-    /* ===== Responsive ===== */
-    @media (max-width: 900px) {
-      .mvv-grid { grid-template-columns: 1fr; }
-      .mvv-cards { grid-template-columns: 1fr; }
-      .pillar-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr; }
-      .cta-stats { gap: 32px; }
-    }
+    /* Responsive */
     @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .nav-links.open {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 64px;
-        left: 0;
-        right: 0;
-        background: var(--deep-sea);
-        padding: 20px 24px;
-        gap: 16px;
-      }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 60px; left: 0; right: 0; background: rgba(2,62,138,0.98); padding: 16px 24px; gap: 16px; }
+      .nav-links.open { display: flex; }
       .hamburger { display: flex; }
-      .section { padding: 64px 20px; }
-      .feed-grid { grid-template-columns: 1fr; }
-      .member-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 480px) {
-      .member-card { flex-direction: column; align-items: center; text-align: center; }
-      .member-highlights { justify-content: center; }
-      .hero-cta { flex-direction: column; align-items: center; }
+      .hero { min-height: 60vh; padding: 100px 20px 60px; }
+      .section { padding: 60px 16px; }
+      .step-box { padding: 20px; }
+      pre { padding: 14px; font-size: 0.75rem; }
+      .security-layer { flex-direction: column; align-items: flex-start; gap: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ===== Header ===== -->
+  <!-- Header -->
   <header class="header">
     <div class="header-inner">
-      <a href="#hero" class="header-logo">
-        <img src="https://jaguer.jp/wp-content/uploads/2021/03/jaguer.svg" alt="Jagu'e'r">
-        <span class="logo-sub">沖縄分科会</span>
-      </a>
+      <a href="#hero" class="header-logo">Jagu'e'r 沖縄 | ハンズオン 2026</a>
       <nav>
         <ul class="nav-links" id="navLinks">
-          <li><a href="#about">About</a></li>
-          <li><a href="#pillars">活動の柱</a></li>
-          <li><a href="#members">メンバー</a></li>
-          <li><a href="#news">ニュース</a></li>
-          <li><a href="#join">参加する</a></li>
+          <li><a href="#overview">概要</a></li>
+          <li><a href="#schedule">スケジュール</a></li>
+          <li><a href="#setup">セットアップ</a></li>
+          <li><a href="#content">コンテンツ</a></li>
+          <li><a href="#architecture">アーキテクチャ</a></li>
+          <li><a href="#data">データ</a></li>
+          <li><a href="#faq">FAQ</a></li>
         </ul>
       </nav>
       <button class="hamburger" id="hamburger" aria-label="メニュー">
@@ -924,641 +337,624 @@
     </div>
   </header>
 
-  <!-- ===== Hero ===== -->
+  <!-- Hero -->
   <section class="hero" id="hero">
-    <div class="hero-bg"></div>
-    <!-- Hibiscus decoration SVGs -->
-    <svg class="hibiscus hibiscus-1" viewBox="0 0 200 200" fill="white" xmlns="http://www.w3.org/2000/svg">
-      <path d="M100 20 C120 60, 160 60, 180 100 C160 140, 120 140, 100 180 C80 140, 40 140, 20 100 C40 60, 80 60, 100 20Z"/>
-      <circle cx="100" cy="100" r="20"/>
-    </svg>
-    <svg class="hibiscus hibiscus-2" viewBox="0 0 200 200" fill="white" xmlns="http://www.w3.org/2000/svg">
-      <path d="M100 20 C120 60, 160 60, 180 100 C160 140, 120 140, 100 180 C80 140, 40 140, 20 100 C40 60, 80 60, 100 20Z"/>
-      <circle cx="100" cy="100" r="20"/>
-    </svg>
-
-    <div class="hero-content">
-      <div class="hero-logo">
-        <img src="https://jaguer.jp/wp-content/uploads/2021/03/jaguer.svg" alt="Jagu'e'r">
+    <div>
+      <h1>データで考える、沖縄の<br><span class="accent">「ちょうどいい」と「もっといい」</span></h1>
+      <p class="subtitle">Jagu'e'r 沖縄分科会 &times; サンエー &times; 琉球大学 特別コラボハンズオン</p>
+      <div class="meta-info">
+        <span class="meta-badge">&#128197; 2026年4月11日（土）10:00〜15:00</span>
+        <span class="meta-badge">&#128205; 琉球大学 工学部</span>
+        <span class="meta-badge">&#9729;&#65039; Google Cloud &times; BigQuery &times; Gemini</span>
       </div>
-      <div class="hero-badge">Google Cloud User Community</div>
-      <h1>クラウドの力で、<br><span class="accent">沖縄の未来</span>をつくる。</h1>
-      <p class="subtitle">Jagu'e'r 沖縄分科会</p>
-      <p class="hero-tagline">
-        Google Cloud 公式ユーザー会 Jagu'e'r の地域分科会として、<br>
-        沖縄から技術と人をつなぎ、地域の可能性を広げます。
-      </p>
       <div class="hero-cta">
-        <a href="https://jaguer.connpass.com/" target="_blank" rel="noopener" class="btn btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-          イベントに参加する
-        </a>
-        <a href="#about" class="btn btn-outline">活動を見る</a>
-      </div>
-    </div>
-
-    <div class="wave-container">
-      <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,50 1440,40 L1440,80 L0,80 Z" fill="#FAFCFF"/>
-      </svg>
-    </div>
-  </section>
-
-  <!-- ===== About / MVV ===== -->
-  <section class="section about" id="about">
-    <div class="section-inner">
-
-      <div class="mvv-grid fade-up">
-        <div class="mvv-text">
-          <span class="section-label">About Us</span>
-          <h3>沖縄から、Google Cloud で<br>つながる未来へ</h3>
-          <p>
-            Jagu'e'r 沖縄分科会は、2024年末に沖縄の有志によって立ち上げられた
-            Google Cloud 公式ユーザー会の地域分科会です。<br><br>
-            エンジニアも非エンジニアも、うちなーんちゅも県外の方も。
-            多様なバックグラウンドを持つメンバーが集まり、
-            Google Cloud を通じて沖縄の地域課題に向き合い、
-            テクノロジーで「うちなー」の未来を一緒につくるコミュニティです。
-          </p>
-        </div>
-        <div class="mvv-visual">
-          <div class="mvv-icon">
-            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="40" cy="40" r="36" stroke="#023E8A" stroke-width="2" fill="rgba(0,119,182,0.1)"/>
-              <path d="M28 52 C28 40, 40 28, 52 28" stroke="#0077B6" stroke-width="3" stroke-linecap="round" fill="none"/>
-              <path d="M24 48 C24 34, 38 22, 54 22" stroke="#48CAE4" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
-              <circle cx="52" cy="28" r="4" fill="#E63946"/>
-              <circle cx="28" cy="52" r="4" fill="#2A9D8F"/>
-              <path d="M36 36 L44 36 L44 44 L36 44Z" fill="#023E8A" rx="2"/>
-            </svg>
-          </div>
-          <div class="mvv-quote">いつ（五）の世（四）までも</div>
-          <div class="mvv-quote-sub">ミンサー織に込められた想いのように、<br>永く続くコミュニティを目指して</div>
-        </div>
-      </div>
-
-      <!-- MVV Cards -->
-      <div class="mvv-cards fade-up">
-        <div class="mvv-card">
-          <div class="mvv-card-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0077B6" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <h4>Mission</h4>
-          <h3>テクノロジーで沖縄の<br>地域課題を解決する</h3>
-          <p>Google Cloud の先端技術を活用し、沖縄が抱える固有の課題に対して、コミュニティの力で解決策を生み出します。</p>
-        </div>
-        <div class="mvv-card">
-          <div class="mvv-card-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E63946" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <h4>Vision</h4>
-          <h3>沖縄を、クラウド先進<br>地域にする</h3>
-          <p>沖縄がクラウド技術の活用においてリーディングエリアとなり、地方創生のモデルケースとして全国に発信します。</p>
-        </div>
-        <div class="mvv-card">
-          <div class="mvv-card-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-          </div>
-          <h4>Values</h4>
-          <h3>ゆいまーる精神で<br>共に学び、共に成長する</h3>
-          <p>沖縄の「ゆいまーる」（相互扶助）の精神を大切に、初心者から上級者まで誰もが気軽に参加し、助け合える場をつくります。</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ===== Three Pillars ===== -->
-  <section class="section pillars" id="pillars">
-    <div class="section-inner">
-      <span class="section-label fade-up">Activities</span>
-      <h2 class="section-title fade-up">3つの活動の柱</h2>
-      <p class="section-desc fade-up">沖縄分科会は3つのテーマを軸に活動を展開しています。</p>
-
-      <div class="pillar-grid fade-up">
-        <div class="pillar-card">
-          <div class="pillar-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#023E8A" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-          </div>
-          <h3>地域課題のDX推進</h3>
-          <p>沖縄特有の産業構造や地理的課題に対して、Google Cloud の技術を活用したDXソリューションを企画・実践します。ハッカソンやプロトタイプ開発を通じ、実際の課題解決に取り組みます。</p>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E63946" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-          </div>
-          <h3>多様なコラボレーション</h3>
-          <p>AI/ML分科会など他のJagu'e'r分科会との横断企画、大学との産学連携、沖縄の起業家とエンジニアのマッチングなど、多様なコラボレーションを推進します。</p>
-        </div>
-        <div class="pillar-card">
-          <div class="pillar-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-          </div>
-          <h3>気軽に学べる勉強会</h3>
-          <p>Google Cloud の基礎からGenerative AIの最前線まで、初心者でも安心して参加できるハンズオンや勉強会を定期開催。オンライン参加で離島からもアクセス可能です。</p>
-        </div>
+        <a href="https://jaguer.connpass.com/event/386873/" target="_blank" rel="noopener" class="btn btn-primary">connpass で参加登録</a>
+        <a href="#setup" class="btn btn-outline">環境セットアップへ</a>
       </div>
     </div>
   </section>
 
-  <!-- ===== Photo Banner 1: Okinawa Beach ===== -->
-  <div class="photo-banner">
-    <img src="https://images.unsplash.com/photo-1754228781615-cc3d79670b0e?auto=format&fit=crop&w=1920&q=80" alt="沖縄の美しい海" loading="lazy">
-    <div class="photo-banner-overlay"></div>
-    <span class="photo-banner-caption">Photo by Romeo A. on Unsplash</span>
-  </div>
-
-  <!-- ===== Members ===== -->
-  <section class="section members" id="members">
+  <!-- Overview -->
+  <section class="section" id="overview">
     <div class="section-inner">
-      <span class="section-label fade-up">Members</span>
-      <h2 class="section-title fade-up">運営メンバー</h2>
-      <p class="section-desc fade-up">多様なバックグラウンドを持つ14名の有志が運営しています。</p>
-
-      <div class="member-grid fade-up">
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/enokawa.jpg" alt="榮野川 隼人">
-          <div class="member-info">
-            <div class="member-name">榮野川 隼人（エノカワ）</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">クラスメソッド</div>
-            <p class="member-bio">データ分析基盤構築を支援する Google Cloud プロフェッショナル。DevelopersIOでの技術発信も精力的に行う。</p>
-            <div class="member-highlights">
-              <span class="member-tag speaker">Meetup #1 BigQuery登壇</span>
-              <span class="member-tag">Meetup #2 レポート執筆</span>
-              <span class="member-tag organizer">KOZAハッカソン 運営</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/kawakami.JPG" alt="川上 浩">
-          <div class="member-info">
-            <div class="member-name">川上 浩</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">クラウドエース</div>
-            <p class="member-bio">Next Recapサテライトのイベントオーナー。「百戦錬磨の指揮者のように複雑な課題を解きほぐす」圧巻のリーダーシップ。</p>
-            <div class="member-highlights">
-              <span class="member-tag organizer">Next Recap オーナー</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/tatetsu.jpg" alt="立津 慶幸">
-          <div class="member-info">
-            <div class="member-name">立津 慶幸（あせい）</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">名桜大学 / Tymewise 合同会社</div>
-            <p class="member-bio">大学教員であり人材育成コンサルタント。GWS分科会オーナー経験者で「教育 x クラウド」のエキスパート。</p>
-            <div class="member-highlights">
-              <span class="member-tag speaker">Meetup #1 登壇</span>
-              <span class="member-tag mc">KOZAハッカソン 進行</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/nobu-shimabukuro.JPG" alt="島袋 展行">
-          <div class="member-info">
-            <div class="member-name">島袋 展行（のぶ）</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">クラウドエース</div>
-            <p class="member-bio">土木からエンジニアへの異色キャリア。Terraformなど新技術に挑戦中。終始和やかで活気ある進行が持ち味。</p>
-            <div class="member-highlights">
-              <span class="member-tag mc">Meetup #2 司会</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://www.wantedly.com/users/165683743/avatar" alt="國吉 眞太郎">
-          <div class="member-info">
-            <div class="member-name">國吉 眞太郎</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">G-gen / ブランド&プロモーション</div>
-            <p class="member-bio">沖縄出身。リゾートホテル・帝国ホテルを経てIT業界へ転身。Google Cloud Partner All-stars 2025（マーケティング部門）受賞。「DX化で全員Happyに」を掲げるインサイドセールスのプロ。</p>
-            <div class="member-highlights">
-              <span class="member-tag organizer">運営メンバー</span>
-              <span class="member-tag">All-stars 2025</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/kamiya-george.jpg" alt="神谷 乗治">
-          <div class="member-info">
-            <div class="member-name">神谷 乗治（George）</div>
-            <div class="member-role">分科会オーナー / 発起人</div>
-            <div class="member-org">GScale</div>
-            <p class="member-bio">沖縄分科会の発起人。データ分析・クラウドに情熱を注ぐエンジニア。沖縄の地域課題をテクノロジーで解決するコミュニティを立ち上げた。</p>
-            <div class="member-highlights">
-              <span class="member-tag organizer">Meetup #1 運営</span>
-              <span class="member-tag organizer">KOZAハッカソン 審査員</span>
-              <span class="member-tag">ハンズオン 企画</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <div class="member-avatar-placeholder" style="background: linear-gradient(135deg, var(--coral), var(--sunset));">秋</div>
-          <div class="member-info">
-            <div class="member-name">秋山 解</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">ちゅらデータ</div>
-            <p class="member-bio">沖縄のデータ活用を推進するちゅらデータ所属。コミュニティの横のつながりを広げるハブ的存在。</p>
-            <div class="member-highlights">
-              <span class="member-tag speaker">Meetup #2 座談会</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/min.png" alt="佐々木 愛美">
-          <div class="member-info">
-            <div class="member-name">佐々木 愛美（みん）</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">G-gen / データアナリティクス課</div>
-            <p class="member-bio">2024年7月 G-gen にジョイン。クラウドソリューション部データアナリティクス課所属。G-gen最南端の沖縄県在住。うちなーぐちを交えた温かい司会で会場を盛り上げる。最近覚えた島言葉は「マヤー（猫）」。</p>
-            <div class="member-highlights">
-              <span class="member-tag mc">Meetup #1 司会</span>
-              <span class="member-tag">Tech Blog 執筆</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <div class="member-avatar-placeholder" style="background: linear-gradient(135deg, var(--tropical-green), #6EE7B7);">久</div>
-          <div class="member-info">
-            <div class="member-name">久手堅 隆弘</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org"></div>
-            <p class="member-bio">沖縄分科会の運営を支えるメンバー。地域コミュニティとの橋渡し役。</p>
-            <div class="member-highlights">
-              <span class="member-tag organizer">運営サポート</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/aipa.jpeg" alt="玉城 一磨">
-          <div class="member-info">
-            <div class="member-name">玉城 一磨（アイパー隊長）</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">CBcloud</div>
-            <p class="member-bio">物流業界のクラウド活用でDXを推進。Maps APIを月1,000万回以上コールするスケール感で現場のリアルを伝える。</p>
-            <div class="member-highlights">
-              <span class="member-tag speaker">Meetup #1 物流DX登壇</span>
-              <span class="member-tag speaker">Meetup #2 座談会</span>
-              <span class="member-tag organizer">KOZAハッカソン 運営</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://www.dsk-cloud.com/hs-fs/hubfs/undefined-1.jpeg?width=250&height=250&name=undefined-1.jpeg" alt="関谷 友明">
-          <div class="member-info">
-            <div class="member-name">関谷 友明</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">電算システム</div>
-            <p class="member-bio">クラウドエンジニアリング事業部テクノロジーマネジメント部所属。Google Cloud Partner Top Engineer 2025 受賞、2026では Fellow に選出。技術を「共に楽しむ」姿勢で発信。</p>
-            <div class="member-highlights">
-              <span class="member-tag">Top Engineer Fellow</span>
-              <span class="member-tag organizer">運営サポート</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <div class="member-avatar-placeholder" style="background: linear-gradient(135deg, var(--ocean), var(--ocean-light));">純</div>
-          <div class="member-info">
-            <div class="member-name">久保玉井 純</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org">トレノケート</div>
-            <p class="member-bio">Google Cloud 認定トレーナー。ハンズオンの入門セッション講師として初心者にもわかりやすい指導を行う。</p>
-            <div class="member-highlights">
-              <span class="member-tag speaker">ハンズオン 講師</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <img class="member-avatar" src="https://raw.githubusercontent.com/jaguer-okinawa-bunkakai/meetup-speaker-photos/main/ky-profile.png" alt="山時 浩一郎">
-          <div class="member-info">
-            <div class="member-name">山時 浩一郎</div>
-            <div class="member-role">Jagu'e'r Evangelist / Leader</div>
-            <div class="member-org">NTTデータ</div>
-            <p class="member-bio">GWS分科会オーナー、デジタル・クラウド人材育成分科会運営など複数分科会を横断。Jagu'e'r Award 2024 最優秀賞受賞。</p>
-            <div class="member-highlights">
-              <span class="member-tag speaker">Meetup #1 登壇</span>
-              <span class="member-tag speaker">Meetup #2 登壇</span>
-              <span class="member-tag organizer">KOZAハッカソン クロージング</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="member-card">
-          <div class="member-avatar-placeholder" style="background: linear-gradient(135deg, var(--indigo), var(--deep-sea));">伊</div>
-          <div class="member-info">
-            <div class="member-name">伊藤 大成</div>
-            <div class="member-role">運営メンバー</div>
-            <div class="member-org"></div>
-            <p class="member-bio">沖縄分科会の運営を支えるメンバー。</p>
-            <div class="member-highlights">
-              <span class="member-tag organizer">運営サポート</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== News / External Feed ===== -->
-  <section class="section news" id="news">
-    <div class="section-inner">
-      <span class="section-label fade-up">News & Events</span>
-      <h2 class="section-title fade-up">最新情報</h2>
-      <p class="section-desc fade-up">イベント情報やレポートは外部サイトで発信しています。</p>
-
-      <div class="feed-tabs fade-up">
-        <button class="feed-tab active" data-filter="all">すべて</button>
-        <button class="feed-tab" data-filter="connpass">イベント</button>
-        <button class="feed-tab" data-filter="note">レポート</button>
-        <button class="feed-tab" data-filter="jaguer">Jagu'e'r</button>
-      </div>
-
-      <div class="feed-grid fade-up" id="feedGrid">
-        <!-- Static fallback cards (replaced by RSS if available) -->
-        <a href="https://jaguer.connpass.com/event/354013/" target="_blank" rel="noopener" class="feed-card" data-source="connpass">
-          <div class="feed-card-body">
-            <span class="feed-card-source connpass">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-              connpass
-            </span>
-            <h3>Jagu'e'r 沖縄分科会 Google Cloud ハンズオン</h3>
-            <p class="feed-date">2025.05.24</p>
-            <span class="feed-link">詳しく見る <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-          </div>
-        </a>
-
-        <a href="https://note.com/jaguer_okinawa/n/n08b01a79c924" target="_blank" rel="noopener" class="feed-card" data-source="note">
-          <div class="feed-card-body">
-            <span class="feed-card-source note">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
-              note
-            </span>
-            <h3>【熱狂とサンセットの記録】Next x Jagu'e'r アフターイベント サテライト詳細レポート</h3>
-            <p class="feed-date">2025.07.04</p>
-            <span class="feed-link">詳しく見る <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-          </div>
-        </a>
-
-        <a href="https://jaguer.connpass.com/event/347598/" target="_blank" rel="noopener" class="feed-card" data-source="connpass">
-          <div class="feed-card-body">
-            <span class="feed-card-source connpass">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-              connpass
-            </span>
-            <h3>KOZA から始まる AI ハッカソン presented by Jagu'e'r</h3>
-            <p class="feed-date">2025.04.17</p>
-            <span class="feed-link">詳しく見る <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-          </div>
-        </a>
-
-        <a href="https://jaguer.jp/okinawa-meetup2-event-report/" target="_blank" rel="noopener" class="feed-card" data-source="jaguer">
-          <div class="feed-card-body">
-            <span class="feed-card-source jaguer">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
-              Jagu'e'r
-            </span>
-            <h3>Meetup #2「うちなーんちゅ x IT x 未来：Google Cloudで広がる可能性」振り返りレポート</h3>
-            <p class="feed-date">2025.03.19</p>
-            <span class="feed-link">詳しく見る <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-          </div>
-        </a>
-
-        <a href="https://jaguer.jp/okinawa-meetup1-dx-google-workspace/" target="_blank" rel="noopener" class="feed-card" data-source="jaguer">
-          <div class="feed-card-body">
-            <span class="feed-card-source jaguer">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
-              Jagu'e'r
-            </span>
-            <h3>Meetup #1「はじめての"小さなDX"体験：Google Cloud & Workspaceで今日から始める効率化」振り返りレポート</h3>
-            <p class="feed-date">2025.01.31</p>
-            <span class="feed-link">詳しく見る <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-          </div>
-        </a>
-
-        <a href="https://dev.classmethod.jp/articles/jaguer-okinawa-subcommittee-meetup-1/" target="_blank" rel="noopener" class="feed-card" data-source="note">
-          <div class="feed-card-body">
-            <span class="feed-card-source note">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
-              ブログ
-            </span>
-            <h3>Jagu'e'r 沖縄分科会 Meetup #1 に登壇しました：BigQuery を使った小規模データ分析デモ</h3>
-            <p class="feed-date">2025.02</p>
-            <span class="feed-link">詳しく見る <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== Photo Banner 2: Okinawa Sunset ===== -->
-  <div class="photo-banner">
-    <img src="https://images.unsplash.com/photo-1601907664514-6d20e6ccea08?auto=format&fit=crop&w=1920&q=80" alt="沖縄の夕日" loading="lazy">
-    <div class="photo-banner-overlay" style="background: linear-gradient(180deg, rgba(2,62,138,0.1) 0%, rgba(230,57,70,0.15) 100%);"></div>
-    <span class="photo-banner-caption">Photo by Syuhei Inoue on Unsplash</span>
-  </div>
-
-  <!-- ===== Minsaa Border ===== -->
-  <div class="minsaa-border"></div>
-
-  <!-- ===== CTA / Join ===== -->
-  <section class="section cta" id="join">
-    <div class="cta-bg"></div>
-    <div class="section-inner">
-      <span class="section-label fade-up" style="color: var(--ocean-pale);">Join Us</span>
-      <h2 class="section-title fade-up">仲間になろう</h2>
-      <p class="section-desc fade-up">
-        エンジニアも非エンジニアも、うちなーんちゅも県外の方も。<br>
-        Google Cloud でつながる沖縄コミュニティに参加しませんか？<br>
-        オンライン参加OK。離島からでもどこからでも。
+      <span class="section-label">Overview</span>
+      <h2 class="section-title">イベント概要</h2>
+      <p class="section-desc">
+        沖縄最大の流通企業「サンエー」の実 PoS データ（匿名化済み）を使い、Google Cloud の BigQuery と Gemini を活用したデータ分析を体験するワークショップです。
       </p>
 
-      <div class="cta-stats fade-up">
-        <div class="cta-stat">
-          <div class="cta-stat-number" data-count="14">14</div>
-          <div class="cta-stat-label">運営メンバー</div>
-        </div>
-        <div class="cta-stat">
-          <div class="cta-stat-number" data-count="5">5+</div>
-          <div class="cta-stat-label">開催イベント</div>
-        </div>
-        <div class="cta-stat">
-          <div class="cta-stat-number" data-count="5000">5,000+</div>
-          <div class="cta-stat-label">Jagu'e'r 会員数</div>
-        </div>
-      </div>
+      <table>
+        <tr><th style="width:140px;">項目</th><th>内容</th></tr>
+        <tr><td><strong>日時</strong></td><td>2026年4月11日（土）10:00〜15:00</td></tr>
+        <tr><td><strong>場所</strong></td><td>琉球大学 工学部</td></tr>
+        <tr><td><strong>主催</strong></td><td><a href="https://jaguer.jp/" target="_blank">Jagu'e'r</a>（Google Cloud ユーザー会）沖縄分科会</td></tr>
+        <tr><td><strong>協力</strong></td><td>株式会社サンエー、琉球大学</td></tr>
+        <tr><td><strong>対象</strong></td><td>大学生（データ分析初学者）〜社会人エンジニア（経験者）</td></tr>
+        <tr><td><strong>費用</strong></td><td>無料（Google Cloud バウチャー配布あり）</td></tr>
+      </table>
 
-      <div class="cta-buttons fade-up">
-        <a href="http://goo.gle/Jaguer" target="_blank" rel="noopener" class="btn btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
-          Jagu'e'r に登録する
-        </a>
-        <a href="https://jaguer.connpass.com/" target="_blank" rel="noopener" class="btn btn-coral">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-          connpass でフォロー
-        </a>
-        <a href="https://note.com/jaguer_okinawa" target="_blank" rel="noopener" class="btn btn-outline">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          note を読む
-        </a>
+      <div class="card-grid" style="margin-top:36px;">
+        <div class="card">
+          <div class="card-icon">&#129302;</div>
+          <h3>AI に聞くだけでデータ分析</h3>
+          <p>Gemini in BigQuery を使い、日本語で質問するだけでデータから答えが返ってくる体験。SQLの知識は不要です。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#128202;</div>
+          <h3>サンエーの実データで分析</h3>
+          <p>皆さんがよく行くサンエーの購買データ（匿名化済み）を題材に、身近なデータの面白さを発見します。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#128274;</div>
+          <h3>データクリーンルーム体験</h3>
+          <p>企業の機密データを安全に共有するための最新技術「データクリーンルーム」を実際に体験できます。</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== Minsaa Border ===== -->
-  <div class="minsaa-border"></div>
+  <!-- Schedule -->
+  <section class="section" id="schedule">
+    <div class="section-inner">
+      <span class="section-label">Schedule</span>
+      <h2 class="section-title">タイムテーブル</h2>
+      <p class="section-desc">約2時間のハンズオン + BBQ交流会。ペースに合わせて柔軟に進行します。</p>
 
-  <!-- ===== Footer ===== -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <img src="https://jaguer.jp/wp-content/uploads/2021/03/jaguer.svg" alt="Jagu'e'r">
-          <h3>沖縄分科会</h3>
-          <p>
-            Japan Google Cloud Usergroup for Enterprise の地域分科会として、
-            沖縄からクラウド技術の活用と地域DXを推進するコミュニティです。
-          </p>
-        </div>
-        <div class="footer-links">
-          <h4>Links</h4>
-          <ul>
-            <li><a href="https://jaguer.jp/" target="_blank" rel="noopener">Jagu'e'r 本体</a></li>
-            <li><a href="https://jaguer.jp/okinawa/" target="_blank" rel="noopener">沖縄分科会ページ</a></li>
-            <li><a href="https://jaguer.connpass.com/" target="_blank" rel="noopener">connpass</a></li>
-            <li><a href="https://note.com/jaguer_okinawa" target="_blank" rel="noopener">note</a></li>
-          </ul>
-        </div>
-        <div class="footer-links">
-          <h4>Community</h4>
-          <ul>
-            <li><a href="http://goo.gle/Jaguer" target="_blank" rel="noopener">Jagu'e'r 登録</a></li>
-            <li><a href="https://jaguer.jp/workinggroup/" target="_blank" rel="noopener">分科会一覧</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#members">メンバー</a></li>
-          </ul>
-        </div>
+      <ul class="timeline">
+        <li>
+          <span class="time">10:00 - 10:15</span>
+          <span class="event-title">オープニング</span>
+          <span class="event-desc">データクリーンルームの解説・サンエーデータの紹介・環境説明</span>
+        </li>
+        <li>
+          <span class="time">10:15 - 10:30</span>
+          <span class="event-title">Step 1: 環境セットアップ & データ確認</span>
+          <span class="event-desc">Google Cloud プロジェクト作成、Analytics Hub サブスクライブ、最初のクエリ</span>
+        </li>
+        <li>
+          <span class="time">10:30 - 11:00</span>
+          <span class="event-title">Step 2: AI に聞いてみよう（Gemini in BigQuery）</span>
+          <span class="event-desc">自然言語でデータに質問 → AIがSQLを生成 → 結果を確認</span>
+        </li>
+        <li>
+          <span class="time">11:00 - 11:30</span>
+          <span class="event-title">Step 3: データの謎解き分析</span>
+          <span class="event-desc">「答えのある問い」に挑戦。仮説→検証のデータ分析プロセスを体験</span>
+        </li>
+        <li>
+          <span class="time">11:30 - 11:50</span>
+          <span class="event-title">Step 4: 発展コンテンツ（選択制）</span>
+          <span class="event-desc">コースA: 自由分析 &amp; もっとAIに聞く / コースB: データ基盤設計ディスカッション</span>
+        </li>
+        <li>
+          <span class="time">11:50 - 12:00</span>
+          <span class="event-title">クロージング</span>
+          <span class="event-desc">発見の共有・振り返り</span>
+        </li>
+        <li>
+          <span class="time">12:00〜</span>
+          <span class="event-title">BBQ 交流会（希望者）</span>
+          <span class="event-desc">データの話の続きは、きらきらビーチで！</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Setup Guide -->
+  <section class="section" id="setup">
+    <div class="section-inner">
+      <span class="section-label">Setup Guide</span>
+      <h2 class="section-title">環境セットアップガイド</h2>
+      <p class="section-desc">Google Cloud が初めての方でも、手順通りに進めれば 15 分程度で完了します。</p>
+
+      <div class="step-box">
+        <h3><span class="step-number">1</span> Google アカウントの準備</h3>
+        <p>Google Cloud を利用するには Google アカウントが必要です。</p>
+        <ul>
+          <li><strong>Gmail アカウント</strong>をお持ちの方 → そのまま使えます</li>
+          <li><strong>大学のメールアドレス</strong>が Google Workspace の場合 → そのまま使えます</li>
+          <li>Google アカウントをお持ちでない方 → <a href="https://accounts.google.com" target="_blank">accounts.google.com</a> で無料作成</li>
+        </ul>
       </div>
-      <div class="footer-bottom">
-        <span>&copy; 2025 Jagu'e'r 沖縄分科会. Part of <a href="https://jaguer.jp/" target="_blank" rel="noopener">Japan Google Cloud Usergroup for Enterprise</a></span>
-        <span>Made with aloha from Okinawa</span>
+
+      <div class="step-box">
+        <h3><span class="step-number">2</span> Google Cloud プロジェクトの作成</h3>
+        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
+          <li><a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> にアクセスしてログイン</li>
+          <li>画面上部の「プロジェクトの選択」をクリック → 「新しいプロジェクト」</li>
+          <li>プロジェクト名: <code>handson-XXXX</code>（XXXX は好きな名前）を入力して「作成」</li>
+          <li>通知から「プロジェクトを選択」で切り替え</li>
+        </ol>
+        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin-top:20px;">課金（Billing）の設定</h4>
+        <p><strong>バウチャーをお持ちの方（当日配布）:</strong></p>
+        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
+          <li>バウチャーコードを手元に用意</li>
+          <li><a href="https://cloud.google.com/billing/coupon" target="_blank">cloud.google.com/billing/coupon</a> を開く</li>
+          <li>コードを入力して「同意して続行」</li>
+        </ol>
+        <p style="margin-top:10px;"><strong>無料トライアルの方:</strong> コンソール上部の「無料で利用開始」から登録（$300分の無料クレジット）</p>
+      </div>
+
+      <div class="step-box">
+        <h3><span class="step-number">3</span> BigQuery API の有効化</h3>
+        <p>コンソール上部の検索バーに <code>BigQuery API</code> と入力 → 選択 → 「有効にする」をクリック</p>
+      </div>
+
+      <div class="step-box">
+        <h3><span class="step-number">4</span> Analytics Hub でデータをサブスクライブ</h3>
+        <p>ここが最も重要なステップです。運営側が提供するデータを、自分のプロジェクトから参照できるようにします。</p>
+        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
+          <li>左メニュー →「Analytics Hub」をクリック</li>
+          <li>「検索」タブで <code>サンエー</code> または <code>sana</code> と入力して検索</li>
+          <li>表示されるリスティングをクリック →「サブスクライブ」</li>
+          <li>プロジェクト: 自分のプロジェクトを選択、データセット名: <code>meetup8</code>、ロケーション: <code>asia-northeast1</code></li>
+          <li>2つ目以降は「既存のデータセットを使用」→ <code>meetup8</code> を選択</li>
+        </ol>
+        <p style="margin-top:12px;">以下の <strong>全5つ</strong> のリスティングをサブスクライブしてください:</p>
+        <table>
+          <tr><th>リスティング名</th><th>内容</th></tr>
+          <tr><td>card_master - カードマスター</td><td>ポイントカード情報（匿名化済み）</td></tr>
+          <tr><td>customer_master - 顧客マスター</td><td>顧客属性情報（個人情報除外済み）</td></tr>
+          <tr><td>customer_sales_details - 売上明細</td><td>購買トランザクション（原価除外済み）</td></tr>
+          <tr><td>shop_item_daily_performance - 店別日別実績</td><td>店舗 &times; 商品 &times; 日の実績データ</td></tr>
+          <tr><td>food_item_master - 商品マスター</td><td>食品商品情報（原価除外済み）</td></tr>
+        </table>
+      </div>
+
+      <div class="step-box">
+        <h3><span class="step-number">5</span> 動作確認</h3>
+        <p>BigQuery コンソールで以下のクエリを実行して、データが見えることを確認します。</p>
+        <pre><code>-- 売上明細の最初の10件を確認
+SELECT * FROM `meetup8.customer_sales_details` LIMIT 10;</code></pre>
+        <pre><code>-- 全テーブルの件数を確認
+SELECT 'card_master' AS table_name, COUNT(*) AS row_count FROM `meetup8.card_master`
+UNION ALL
+SELECT 'customer_master', COUNT(*) FROM `meetup8.customer_master`
+UNION ALL
+SELECT 'customer_sales_details', COUNT(*) FROM `meetup8.customer_sales_details`
+UNION ALL
+SELECT 'food_item_master', COUNT(*) FROM `meetup8.food_item_master`
+UNION ALL
+SELECT 'shop_item_daily_performance', COUNT(*) FROM `meetup8.shop_item_daily_performance`;</code></pre>
+        <table>
+          <tr><th>テーブル</th><th>期待される件数</th></tr>
+          <tr><td>card_master</td><td>100 件</td></tr>
+          <tr><td>customer_master</td><td>100 件</td></tr>
+          <tr><td>customer_sales_details</td><td>3,059 件</td></tr>
+          <tr><td>food_item_master</td><td>16 件</td></tr>
+          <tr><td>shop_item_daily_performance</td><td>100 件</td></tr>
+        </table>
+      </div>
+
+      <div class="step-box">
+        <h3><span class="step-number">6</span> Gemini in BigQuery を有効化</h3>
+        <p>BigQuery コンソール右上の Gemini アイコン（&#10024;）をクリック →「有効にする」。有効化後、以下を試してみましょう:</p>
+        <pre><code>このデータの中で一番高い買い物はいくらでしたか？</code></pre>
+      </div>
+
+      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin-top:40px; margin-bottom:16px;">セットアップ完了チェックリスト</h3>
+      <ul class="checklist">
+        <li>Google アカウントでログインした</li>
+        <li>Google Cloud プロジェクトを作成した</li>
+        <li>課金アカウントを設定した（バウチャーまたは無料トライアル）</li>
+        <li>BigQuery API を有効化した</li>
+        <li>Analytics Hub で 5 つのリスティングをサブスクライブした</li>
+        <li><code>meetup8</code> データセットに 5 つのテーブルが表示されている</li>
+        <li>テストクエリが正常に実行できた</li>
+        <li>Gemini in BigQuery が有効になっている</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Handson Content -->
+  <section class="section" id="content">
+    <div class="section-inner">
+      <span class="section-label">Handson Content</span>
+      <h2 class="section-title">ハンズオンコンテンツ</h2>
+      <p class="section-desc">「沖縄のスーパーのデータを AI &times; Google Cloud で分析してみよう」</p>
+
+      <!-- Step 1 -->
+      <div class="step-box">
+        <h3><span class="step-number">1</span> 環境セットアップ & まずデータを見てみよう（15分）</h3>
+        <p>分析環境に慣れ、データの全体感をつかみます。</p>
+        <pre><code>-- まずは売上明細を見てみよう
+SELECT * FROM `meetup8.customer_sales_details` LIMIT 10;
+
+-- このデータは全部で何件？
+SELECT COUNT(*) AS total_records FROM `meetup8.customer_sales_details`;
+-- → 3,059件。「1つ1つが、誰かがサンエーでレジを通した記録です」</code></pre>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-box">
+        <h3><span class="step-number">2</span> AI に聞いてみよう &mdash; Gemini で自然言語分析（30分）</h3>
+        <p>SQLを知らない初学者でも「日本語で聞けば答えが返ってくる」体験をします。</p>
+
+        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin:16px 0 8px;">Phase 1: まず AI に聞いてみる</h4>
+        <p>Gemini in BigQuery で以下のような質問を試してみましょう:</p>
+        <ul>
+          <li>「このデータの中で、一番高い買い物はいくらでしたか？」</li>
+          <li>「店舗ごとの売上合計を、多い順に並べてください」</li>
+          <li>「1月で一番売上が高かった日はいつですか？その理由として考えられることは？」</li>
+        </ul>
+
+        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin:16px 0 8px;">Phase 2: AI が生成した SQL を読み解く</h4>
+        <pre><code>-- 例: Gemini が生成した「店舗別売上合計」のSQL
+SELECT
+  store_code,
+  SUM(tax_included_amount) AS total_sales
+FROM `meetup8.customer_sales_details`
+GROUP BY store_code
+ORDER BY total_sales DESC;</code></pre>
+        <p><strong>SQL の 4 つの基本要素:</strong> <code>SELECT</code>（何を見たいか）、<code>FROM</code>（どのテーブルから）、<code>GROUP BY</code>（何でまとめるか）、<code>ORDER BY</code>（どう並べるか）</p>
+
+        <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin:16px 0 8px;">Phase 3: 自分の問いを AI にぶつける</h4>
+        <ul>
+          <li>「一番たくさんの商品を一度に買った人は、何品買った？」</li>
+          <li>「特定の商品コードを買った人は、他にどんな商品を買っている？」</li>
+          <li>「金曜日と日曜日で、買い物の仕方に違いはある？」</li>
+          <li>自由に好きな質問を考えてOK！</li>
+        </ul>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-box">
+        <h3><span class="step-number">3</span> 謎解き分析 &mdash;「答えのある問い」に挑戦（30分）</h3>
+        <p>データ分析の本質は「なぜ？」を考えること。AI に聞いても良いし、SQL を自分で書いても良い。手段は問いません。</p>
+
+        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q1: 元旦の売上が突出して高いのはなぜ？</h4>
+        <pre><code>SELECT
+  usage_date,
+  COUNT(DISTINCT CONCAT(card_no, store_code, trans_no)) AS txn_count,
+  SUM(tax_included_amount) AS total_sales,
+  SAFE_DIVIDE(SUM(tax_included_amount),
+    COUNT(DISTINCT CONCAT(card_no, store_code, trans_no))) AS avg_per_txn
+FROM `meetup8.customer_sales_details`
+GROUP BY usage_date
+ORDER BY usage_date;</code></pre>
+        <p><strong>答え:</strong> 1月1日は売上64,037円で月間最高。客単価3,370円も最高。お正月の買い出し（おせち材料・お年始用品）で1回あたりの購入額が跳ね上がる。</p>
+
+        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q2: 1月28日（土曜日）の売上が極端に低いのはなぜ？</h4>
+        <pre><code>SELECT
+  FORMAT_DATE('%A', PARSE_DATE('%Y%m%d', usage_date)) AS day_of_week,
+  SUM(tax_included_amount) AS total_sales,
+  COUNT(*) AS item_count
+FROM `meetup8.customer_sales_details`
+GROUP BY day_of_week
+ORDER BY total_sales DESC;</code></pre>
+        <p><strong>答え:</strong> 日曜日が189,006円で最も高く、土曜日は111,404円と意外と低い。特に1/28(土)は月間最低の12,147円。前日に月間最多の23取引があり、<strong>金曜に買い溜めした翌土曜は来店が減る</strong>パターン。<br>「土曜が一番売れるはず」という思い込みが、データで覆される瞬間。これがデータ分析の醍醐味。</p>
+
+        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q3: 一番大量に買い物をしたお客さんはどんな買い方？</h4>
+        <pre><code>SELECT
+  card_no, store_code, usage_date,
+  COUNT(*) AS item_count,
+  SUM(tax_included_amount) AS basket_total
+FROM `meetup8.customer_sales_details`
+GROUP BY card_no, store_code, trans_no, usage_date
+ORDER BY item_count DESC
+LIMIT 5;</code></pre>
+        <p><strong>答え:</strong> 最大バスケットは1/19（木）38品・9,756円（1品平均256円）。最高額バスケットは1/1（元旦）37品・17,349円。品数は近いのに金額は1.8倍 &mdash; 正月は単価の高い商品を買っている。</p>
+
+        <h4 style="font-size:0.95rem; font-weight:700; color:var(--coral); margin:20px 0 8px;">&#128270; Q4（発展）: ポイントを多く持つ人は本当にたくさん買い物をしている？</h4>
+        <pre><code>SELECT
+  c.card_no,
+  c.total_point AS current_points,
+  c.cumulative_issued_point AS lifetime_points,
+  COUNT(*) AS purchase_count,
+  SUM(s.tax_included_amount) AS total_spent
+FROM `meetup8.card_master` c
+JOIN `meetup8.customer_sales_details` s ON c.card_no = s.card_no
+GROUP BY c.card_no, c.total_point, c.cumulative_issued_point
+ORDER BY total_spent DESC
+LIMIT 10;</code></pre>
+        <p><strong>答え:</strong> 必ずしも一致しない。ポイント残高が多い人は「貯める派」、少ない人は「使う派」。顧客行動の多様性がデータから見える。</p>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step-box">
+        <h3><span class="step-number">4</span> 発展コンテンツ（20分・選択制）</h3>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">&#127793;</div>
+            <h3>コース A: もっと AI に聞いてみよう</h3>
+            <p>初学者〜中級者向け。自由に質問を考えて AI に聞き、面白い発見を探す。ウィンドウ関数やサブクエリにも挑戦。</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">&#9881;&#65039;</div>
+            <h3>コース B: データ基盤設計ディスカッション</h3>
+            <p>経験者向け。メダリオンアーキテクチャ設計、データクリーンルームの設計論、BigQuery パフォーマンス最適化。</p>
+          </div>
+        </div>
       </div>
     </div>
+  </section>
+
+  <!-- Architecture -->
+  <section class="section" id="architecture">
+    <div class="section-inner">
+      <span class="section-label">Architecture</span>
+      <h2 class="section-title">アーキテクチャ &amp; セキュリティ</h2>
+      <p class="section-desc">データクリーンルーム（DCR）による多層防御で、サンエーの実データを安全に共有しています。</p>
+
+      <div class="arch-diagram">
+        <div class="mermaid">
+graph TB
+    subgraph PROVIDER["データ提供者プロジェクト"]
+        GCS["Cloud Storage<br/>CSV ファイル"]
+        BQ_B["BigQuery sana_bronze<br/>（生データ・内部専用）"]
+        BQ_M["BigQuery sana_meetup8<br/>（匿名化済みビュー + マート）"]
+        DCR["Analytics Hub DCR<br/>9 リスティング<br/>（エグレス制御有効）"]
+        GCS --> BQ_B --> BQ_M --> DCR
+    end
+
+    subgraph SUBSCRIBER["参加者の GCP プロジェクト"]
+        LINKED["Linked Dataset<br/>（読み取り専用）"]
+        GEMINI["Gemini in BigQuery"]
+        LOOKER["Looker Studio"]
+        LINKED --> GEMINI
+        LINKED --> LOOKER
+    end
+
+    DCR -->|"サブスクライブ"| LINKED
+        </div>
+      </div>
+
+      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">セキュリティ多層防御</h3>
+
+      <div class="security-layers">
+        <div class="security-layer sl-1">
+          <span class="layer-num">1</span>
+          <div>
+            <h4>ソースデータ匿名化</h4>
+            <p>個人情報 → HEX エンコード / 原価 → マスク（*****）/ カード番号 → SHA-256 ハッシュ</p>
+          </div>
+        </div>
+        <div class="security-layer sl-2">
+          <span class="layer-num">2</span>
+          <div>
+            <h4>ビューによるカラム制御</h4>
+            <p>HEX カラム・原価カラムを除外 / 店舗コードを店舗名に変換</p>
+          </div>
+        </div>
+        <div class="security-layer sl-3">
+          <span class="layer-num">3</span>
+          <div>
+            <h4>エグレス制御（DCR 機能）</h4>
+            <p>EXPORT / COPY / CREATE TABLE AS SELECT を全てブロック</p>
+          </div>
+        </div>
+        <div class="security-layer sl-4">
+          <span class="layer-num">4</span>
+          <div>
+            <h4>IAM アクセス制御</h4>
+            <p>Google Group メンバーのみサブスクライブ可能</p>
+          </div>
+        </div>
+        <div class="security-layer sl-5">
+          <span class="layer-num">5</span>
+          <div>
+            <h4>プロジェクト分離</h4>
+            <p>プロバイダーとサブスクライバーを分離 / クエリコストは参加者負担</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">エグレス制御の効果</h3>
+      <table>
+        <tr><th>操作</th><th style="width:120px;">許可/ブロック</th></tr>
+        <tr><td><code>SELECT</code> クエリ（LIMIT 含む）</td><td style="color:#38A169; font-weight:700;">許可</td></tr>
+        <tr><td>Gemini in BigQuery（自然言語 → SQL）</td><td style="color:#38A169; font-weight:700;">許可</td></tr>
+        <tr><td>Looker Studio 接続</td><td style="color:#38A169; font-weight:700;">許可</td></tr>
+        <tr><td><code>EXPORT DATA</code>（GCS へエクスポート）</td><td style="color:#E53E3E; font-weight:700;">ブロック</td></tr>
+        <tr><td><code>CREATE TABLE AS SELECT</code></td><td style="color:#E53E3E; font-weight:700;">ブロック</td></tr>
+        <tr><td><code>COPY</code>（他テーブルへコピー）</td><td style="color:#E53E3E; font-weight:700;">ブロック</td></tr>
+      </table>
+
+      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">匿名化方針</h3>
+      <table>
+        <tr><th>データ要素</th><th>処理方法</th><th>公開ビューでの扱い</th></tr>
+        <tr><td>カード番号</td><td>SHA-256 ハッシュ（ビュー層）</td><td class="anon-hash">ハッシュ値で公開</td></tr>
+        <tr><td>顧客 ID（cif_no）</td><td>追加処理なし</td><td class="anon-safe">そのまま公開（結合キー）</td></tr>
+        <tr><td>氏名</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
+        <tr><td>生年月日</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
+        <tr><td>住所</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
+        <tr><td>電話番号</td><td>HEX エンコード（Bronze 層）</td><td class="anon-removed">除外</td></tr>
+        <tr><td>性別</td><td>コード値（1/2）</td><td class="anon-safe">公開</td></tr>
+        <tr><td>職業コード</td><td>2 桁コード</td><td class="anon-safe">公開</td></tr>
+        <tr><td>店舗コード</td><td>店舗名に変換（ビュー層）</td><td class="anon-safe">店舗名で公開</td></tr>
+        <tr><td>原価</td><td>マスク済み（*****）</td><td class="anon-removed">完全除外</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- Data Model -->
+  <section class="section" id="data">
+    <div class="section-inner">
+      <span class="section-label">Data Model</span>
+      <h2 class="section-title">データモデル &amp; テーブル定義</h2>
+      <p class="section-desc">サンエーの PoS データをベースに、参加者が安全に分析できる形に加工しています。</p>
+
+      <div class="arch-diagram">
+        <div class="mermaid">
+erDiagram
+    customer_master ||--o{ card_master : "CIF番号"
+    card_master ||--o{ customer_sales_details : "カード番号"
+    food_item_master ||--o{ customer_sales_details : "商品コード"
+    food_item_master ||--o{ shop_item_daily_performance : "商品コード"
+
+    customer_master {
+        string cif_no PK "顧客ID"
+        int gender_type "性別（1男 2女）"
+        string occupation_code "職業コード"
+        string customer_status "顧客ステータス"
+    }
+
+    card_master {
+        string card_no PK "SHA-256ハッシュ"
+        string cif_no FK "顧客ID"
+        int total_point "ポイント残高"
+        int cumulative_issued_point "累計ポイント"
+    }
+
+    customer_sales_details {
+        string card_no FK "カード番号"
+        string store_name "店舗名"
+        string usage_date "利用日"
+        string product_code FK "商品コード"
+        int tax_included_amount "税込金額"
+    }
+
+    food_item_master {
+        string product_code PK "商品コード"
+        string product_name "商品名"
+        int standard_price "標準売単価"
+    }
+
+    shop_item_daily_performance {
+        string perf_date "日付"
+        string store_name "店舗名"
+        string product_code FK "商品コード"
+        int sales_amount "売上金額"
+    }
+        </div>
+      </div>
+
+      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:24px 0 16px;">テーブル一覧</h3>
+      <div class="data-table-info">
+        <div class="data-table-card">
+          <span class="badge badge-main">メイン分析対象</span>
+          <h4>customer_sales_details（売上明細）</h4>
+          <p><strong>3,059件</strong> &mdash; 2023年1月の購買データ。日別・店舗別・商品別の売上分析に使用。402取引、平均303円/明細。</p>
+        </div>
+        <div class="data-table-card">
+          <span class="badge badge-ref">マスターデータ</span>
+          <h4>customer_master（顧客マスター）</h4>
+          <p><strong>100件</strong> &mdash; 性別・職業コードなどの顧客属性。個人情報は除外済み。</p>
+        </div>
+        <div class="data-table-card">
+          <span class="badge badge-ref">マスターデータ</span>
+          <h4>card_master（カードマスター）</h4>
+          <p><strong>100件</strong> &mdash; ポイントカード情報。残高・累計発行・精算ポイントでポイント利用状況を把握。</p>
+        </div>
+        <div class="data-table-card">
+          <span class="badge badge-ref">マスターデータ</span>
+          <h4>food_item_master（商品マスター）</h4>
+          <p><strong>16件</strong> &mdash; 食品商品情報。サンエーオリジナルギフト商品のマスター。</p>
+        </div>
+        <div class="data-table-card">
+          <span class="badge badge-perf">実績データ</span>
+          <h4>shop_item_daily_performance（店別日別実績）</h4>
+          <p><strong>100件</strong> &mdash; 2026年2月の51店舗実績。売上・見切・廃棄・在庫まで網羅。</p>
+        </div>
+      </div>
+
+      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">Analytics Hub リスティング構成</h3>
+      <table>
+        <tr><th>区分</th><th>数量</th><th>データセット</th><th>備考</th></tr>
+        <tr><td>公開ビュー</td><td>5</td><td><code>sana_meetup8</code></td><td>Bronze層から個人情報・原価を除外</td></tr>
+        <tr><td>データマート</td><td>4</td><td><code>sana_meetup8</code></td><td>日別売上 / 顧客サマリー / 商品ランキング / バスケット分析</td></tr>
+        <tr><td><strong>合計</strong></td><td><strong>9</strong></td><td>&mdash;</td><td>全てエグレス制御有効</td></tr>
+      </table>
+
+      <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin:36px 0 16px;">データの特徴</h3>
+      <div class="card-grid">
+        <div class="card">
+          <h3>売上明細の日別パターン</h3>
+          <table style="margin:0;">
+            <tr><th>日付</th><th>曜日</th><th>売上</th><th>特記</th></tr>
+            <tr><td>1/1</td><td>日</td><td>64,037円</td><td><strong>月間最高</strong></td></tr>
+            <tr><td>1/27</td><td>金</td><td>49,524円</td><td>最多取引(23件)</td></tr>
+            <tr><td>1/28</td><td>土</td><td>12,147円</td><td><strong>月間最低</strong></td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <h3>曜日別売上</h3>
+          <table style="margin:0;">
+            <tr><th>曜日</th><th>売上</th><th>明細数</th></tr>
+            <tr><td><strong>日曜</strong></td><td><strong>189,006円</strong></td><td>543件</td></tr>
+            <tr><td>月曜</td><td>170,399円</td><td>572件</td></tr>
+            <tr><td>土曜</td><td>111,404円</td><td>374件</td></tr>
+          </table>
+          <p style="margin-top:8px; font-size:0.82rem;">沖縄のファミリー層の日曜まとめ買い文化が反映</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="section-inner">
+      <span class="section-label">FAQ</span>
+      <h2 class="section-title">よくあるトラブルと対処法</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">「課金アカウントが設定されていません」と表示される</div>
+        <div class="faq-a">課金設定が完了していません。バウチャーコードの入力、または無料トライアルの登録を行ってください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Analytics Hub でリスティングが見つからない</div>
+        <div class="faq-a">検索キーワード（<code>サンエー</code> または <code>sana</code>）が正しいか確認。ハンズオン用 Google アカウントでログインしているか確認。それでも見つからない場合は運営スタッフにお声がけください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">サブスクライブ時に「権限がありません」と表示される</div>
+        <div class="faq-a">自分のプロジェクトが選択されているか、課金アカウントがリンクされているか、BigQuery API が有効化されているか確認してください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">クエリ実行時に「アクセスが拒否されました」と表示される</div>
+        <div class="faq-a">サブスクライブが正しく完了していない可能性があります。セットアップの Step 4 を再度確認してください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">データをダウンロードしようとしたらブロックされた</div>
+        <div class="faq-a">正常な動作です。データクリーンルームの Egress 制御により、データのダウンロード・エクスポートは意図的に防止されています。分析結果は画面上で確認してください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">プロジェクト ID が「既に使用されています」と表示される</div>
+        <div class="faq-a">プロジェクト ID は世界で一意です。<code>handson-tanaka-0315</code>、<code>handson-ryudai-2026</code> のようにユニークな名前にしてください。</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Gemini がデータセットを認識しない</div>
+        <div class="faq-a">左パネルで <code>meetup8</code> データセットをクリックして選択した状態で再度質問してみてください。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p style="margin-bottom:12px;">
+      <a href="https://jaguer.connpass.com/event/386873/" target="_blank">connpass イベントページ</a> &nbsp;|&nbsp;
+      <a href="https://jaguer.connpass.com/" target="_blank">Jagu'e'r 沖縄分科会</a> &nbsp;|&nbsp;
+      <a href="https://cloud.google.com/bigquery/docs/data-clean-rooms" target="_blank">BigQuery Data Clean Rooms</a> &nbsp;|&nbsp;
+      <a href="https://github.com/jaguer-okinawa-bunkakai/2026-vol1-san-a-ryudai-handson-public" target="_blank">GitHub リポジトリ</a>
+    </p>
+    <p>&copy; 2026 Jagu'e'r 沖縄分科会. Powered by Google Cloud.</p>
   </footer>
 
+  <!-- Scroll to top -->
+  <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
   <script>
-    // ===== Mobile menu toggle =====
+    // Mermaid init
+    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: {
+      primaryColor: '#E3F2FD', primaryTextColor: '#1B3A5C', primaryBorderColor: '#0077B6',
+      lineColor: '#0077B6', secondaryColor: '#F0FFF4', tertiaryColor: '#FFF3E0'
+    }});
+
+    // Mobile nav
     document.getElementById('hamburger').addEventListener('click', function() {
       document.getElementById('navLinks').classList.toggle('open');
     });
-
-    // Close menu on link click
-    document.querySelectorAll('.nav-links a').forEach(function(link) {
-      link.addEventListener('click', function() {
+    document.querySelectorAll('.nav-links a').forEach(function(a) {
+      a.addEventListener('click', function() {
         document.getElementById('navLinks').classList.remove('open');
       });
     });
 
-    // ===== Scroll animations =====
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-    document.querySelectorAll('.fade-up').forEach(function(el) {
-      observer.observe(el);
+    // Scroll to top button
+    window.addEventListener('scroll', function() {
+      var btn = document.getElementById('scrollTop');
+      if (window.scrollY > 400) { btn.classList.add('visible'); }
+      else { btn.classList.remove('visible'); }
     });
-
-    // ===== Feed tab filter =====
-    document.querySelectorAll('.feed-tab').forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        document.querySelectorAll('.feed-tab').forEach(function(t) { t.classList.remove('active'); });
-        this.classList.add('active');
-        var filter = this.getAttribute('data-filter');
-        document.querySelectorAll('.feed-card').forEach(function(card) {
-          if (filter === 'all' || card.getAttribute('data-source') === filter) {
-            card.classList.remove('feed-hidden');
-          } else {
-            card.classList.add('feed-hidden');
-          }
-        });
-      });
-    });
-
-    // ===== RSS Feed fetch (with graceful fallback) =====
-    // Note: Due to CORS, RSS feeds may not load in local dev.
-    // In production, use a serverless proxy (Cloud Functions) or build-time fetch.
-    async function fetchRSS(url, source) {
-      try {
-        var proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-        var response = await fetch(proxyUrl);
-        if (!response.ok) return [];
-        var text = await response.text();
-        var parser = new DOMParser();
-        var xml = parser.parseFromString(text, 'text/xml');
-        var items = xml.querySelectorAll('item');
-        var results = [];
-        items.forEach(function(item, i) {
-          if (i >= 3) return;
-          results.push({
-            title: item.querySelector('title') ? item.querySelector('title').textContent : '',
-            link: item.querySelector('link') ? item.querySelector('link').textContent : '',
-            date: item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent).toLocaleDateString('ja-JP') : '',
-            source: source
-          });
-        });
-        return results;
-      } catch (e) {
-        return [];
-      }
-    }
-
-    async function loadFeeds() {
-      var feeds = await Promise.all([
-        fetchRSS('https://note.com/jaguer_okinawa/rss', 'note'),
-      ]);
-      var allItems = feeds.flat();
-      if (allItems.length === 0) return; // Keep static fallback
-
-      var grid = document.getElementById('feedGrid');
-      allItems.forEach(function(item) {
-        var card = document.createElement('a');
-        card.href = item.link;
-        card.target = '_blank';
-        card.rel = 'noopener';
-        card.className = 'feed-card';
-        card.setAttribute('data-source', item.source);
-        var sourceClass = item.source;
-        card.innerHTML =
-          '<div class="feed-card-body">' +
-          '<span class="feed-card-source ' + sourceClass + '">' + item.source + '</span>' +
-          '<h3>' + item.title + '</h3>' +
-          '<p class="feed-date">' + item.date + '</p>' +
-          '<span class="feed-link">詳しく見る →</span>' +
-          '</div>';
-        grid.prepend(card);
-      });
-    }
-
-    loadFeeds();
   </script>
 </body>
 </html>
