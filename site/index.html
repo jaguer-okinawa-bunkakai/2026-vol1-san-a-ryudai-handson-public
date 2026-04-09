@@ -324,6 +324,7 @@
         <ul class="nav-links" id="navLinks">
           <li><a href="#overview">概要</a></li>
           <li><a href="#schedule">スケジュール</a></li>
+          <li><a href="#links">リンク集</a></li>
           <li><a href="#slides">スライド</a></li>
           <li><a href="#setup">セットアップ</a></li>
           <li><a href="#content">コンテンツ</a></li>
@@ -469,6 +470,33 @@
     </div>
   </section>
 
+  <!-- Quick Links -->
+  <section class="section" id="links">
+    <div class="section-inner">
+      <span class="section-label">Quick Links</span>
+      <h2 class="section-title">当日リンク集</h2>
+      <p class="section-desc">ハンズオン中に使用するリンクをまとめています。</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">&#127899;</div>
+          <h3>バウチャー（Google Cloud クレジット）</h3>
+          <p><a href="https://trygcp.dev/claim/bdc-Jaguer-okinawa-bwai" target="_blank" style="font-weight:700; font-size:0.95rem;">trygcp.dev/claim/bdc-Jaguer-okinawa-bwai</a></p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#9729;&#65039;</div>
+          <h3>Google Cloud コンソール</h3>
+          <p><a href="https://console.cloud.google.com" target="_blank" style="font-weight:700; font-size:0.95rem;">console.cloud.google.com</a></p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#128202;</div>
+          <h3>発表スライドビルダー</h3>
+          <p><a href="slides/builder.html" target="_blank" style="font-weight:700; font-size:0.95rem;">スライドビルダーを開く</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Slides -->
   <section class="section" id="slides">
     <div class="section-inner">
@@ -568,11 +596,11 @@
           <li>通知から「プロジェクトを選択」で切り替え</li>
         </ol>
         <h4 style="font-size:0.92rem; font-weight:700; color:var(--deep-sea); margin-top:20px;">課金（Billing）の設定</h4>
-        <p><strong>バウチャーをお持ちの方（当日配布）:</strong></p>
+        <p><strong>バウチャーを使用する方（当日案内）:</strong></p>
         <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
-          <li>バウチャーコードを手元に用意</li>
-          <li><a href="https://cloud.google.com/billing/coupon" target="_blank">cloud.google.com/billing/coupon</a> を開く</li>
-          <li>コードを入力して「同意して続行」</li>
+          <li>以下のバウチャーURLにアクセス:<br><a href="https://trygcp.dev/claim/bdc-Jaguer-okinawa-bwai" target="_blank" style="font-weight:700;">https://trygcp.dev/claim/bdc-Jaguer-okinawa-bwai</a></li>
+          <li>Google アカウントでログインして「同意して続行」</li>
+          <li>課金アカウントが自動作成されます</li>
         </ol>
         <p style="margin-top:10px;"><strong>無料トライアルの方:</strong> コンソール上部の「無料で利用開始」から登録（$300分の無料クレジット）</p>
       </div>
@@ -587,51 +615,62 @@
         <p>ここが最も重要なステップです。運営側が提供するデータを、自分のプロジェクトから参照できるようにします。</p>
         <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
           <li>左メニュー →「Analytics Hub」をクリック</li>
-          <li>「検索」タブで <code>サンエー</code> または <code>sana</code> と入力して検索</li>
+          <li>「検索」タブで <code>sana-ryudai-handson</code> と入力して検索</li>
           <li>表示されるリスティングをクリック →「サブスクライブ」</li>
-          <li>プロジェクト: 自分のプロジェクトを選択、データセット名: <code>meetup8</code>、ロケーション: <code>asia-northeast1</code></li>
-          <li>2つ目以降は「既存のデータセットを使用」→ <code>meetup8</code> を選択</li>
+          <li>プロジェクト: 自分のプロジェクトを選択、データセット名はそのまま OK</li>
+          <li><strong>9個すべて</strong>のリスティングをサブスクライブ</li>
         </ol>
-        <p style="margin-top:12px;">以下の <strong>全5つ</strong> のリスティングをサブスクライブしてください:</p>
+        <p style="margin-top:12px;">以下の <strong>全9個</strong> のリスティングをサブスクライブしてください:</p>
         <table>
-          <tr><th>リスティング名</th><th>内容</th></tr>
-          <tr><td>card_master - カードマスター</td><td>ポイントカード情報（匿名化済み）</td></tr>
-          <tr><td>customer_master - 顧客マスター</td><td>顧客属性情報（個人情報除外済み）</td></tr>
-          <tr><td>customer_sales_details - 売上明細</td><td>購買トランザクション（原価除外済み）</td></tr>
-          <tr><td>shop_item_daily_performance - 店別日別実績</td><td>店舗 &times; 商品 &times; 日の実績データ</td></tr>
-          <tr><td>food_item_master - 商品マスター</td><td>食品商品情報（原価除外済み）</td></tr>
+          <tr><th>リスティング名</th><th>内容</th><th>件数</th></tr>
+          <tr><td>customer_sales_details</td><td>顧客売上明細</td><td>約7,500万件</td></tr>
+          <tr><td>shop_item_daily_performance</td><td>店別単品別実績（日別）</td><td>約5,800万件</td></tr>
+          <tr><td>card_master</td><td>ポイントカード情報</td><td>約258万件</td></tr>
+          <tr><td>customer_master</td><td>顧客属性情報</td><td>約141万件</td></tr>
+          <tr><td>food_item_master</td><td>食品商品マスター</td><td>約63万件</td></tr>
+          <tr><td>mart_daily_sales</td><td>日別 &times; 店舗別売上集計</td><td>約5,400件</td></tr>
+          <tr><td>mart_customer_summary</td><td>顧客ごとの購買サマリー</td><td>約59万件</td></tr>
+          <tr><td>mart_product_ranking</td><td>商品ランキング</td><td>約29万件</td></tr>
+          <tr><td>mart_basket_analysis</td><td>買い物かご分析</td><td>約960万件</td></tr>
         </table>
       </div>
 
       <div class="step-box">
-        <h3><span class="step-number">5</span> 動作確認</h3>
-        <p>BigQuery コンソールで以下のクエリを実行して、データが見えることを確認します。</p>
-        <pre><code>-- 売上明細の最初の10件を確認
-SELECT * FROM `meetup8.customer_sales_details` LIMIT 10;</code></pre>
-        <pre><code>-- 全テーブルの件数を確認
-SELECT 'card_master' AS table_name, COUNT(*) AS row_count FROM `meetup8.card_master`
-UNION ALL
-SELECT 'customer_master', COUNT(*) FROM `meetup8.customer_master`
-UNION ALL
-SELECT 'customer_sales_details', COUNT(*) FROM `meetup8.customer_sales_details`
-UNION ALL
-SELECT 'food_item_master', COUNT(*) FROM `meetup8.food_item_master`
-UNION ALL
-SELECT 'shop_item_daily_performance', COUNT(*) FROM `meetup8.shop_item_daily_performance`;</code></pre>
-        <table>
-          <tr><th>テーブル</th><th>期待される件数</th></tr>
-          <tr><td>card_master</td><td>100 件</td></tr>
-          <tr><td>customer_master</td><td>100 件</td></tr>
-          <tr><td>customer_sales_details</td><td>3,059 件</td></tr>
-          <tr><td>food_item_master</td><td>16 件</td></tr>
-          <tr><td>shop_item_daily_performance</td><td>100 件</td></tr>
-        </table>
+        <h3><span class="step-number">5</span> 動作確認（SELECT 1）</h3>
+        <p>BigQuery コンソールで以下のクエリを <strong>各テーブルに対して実行</strong> してください。「最近使用したアイテム」に表示されるようになります。</p>
+        <pre><code>SELECT 1 FROM `sana_ryudai_handson.card_master` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.customer_master` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.customer_sales_details` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.food_item_master` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_basket_analysis` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_customer_summary` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_daily_sales` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_product_ranking` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.shop_item_daily_performance` LIMIT 1;</code></pre>
+        <p style="margin-top:8px; font-size:0.85rem; color:#64748B;">9テーブルすべてに実行してください。結果が返ればOKです。</p>
       </div>
 
       <div class="step-box">
-        <h3><span class="step-number">6</span> Gemini in BigQuery を有効化</h3>
-        <p>BigQuery コンソール右上の Gemini アイコン（&#10024;）をクリック →「有効にする」。有効化後、以下を試してみましょう:</p>
-        <pre><code>このデータの中で一番高い買い物はいくらでしたか？</code></pre>
+        <h3><span class="step-number">6</span> Conversational Analytics エージェントの構築</h3>
+        <p>自然言語でデータ分析するには、<strong>Data Agent</strong> の構築が必要です。</p>
+        <ol style="font-size:0.9rem; color:#475569; padding-left:20px;">
+          <li>エクスプローラでテーブルを選択</li>
+          <li><strong>「会話を作成」</strong> をクリック → エージェントが作成されます</li>
+          <li>エージェント画面で <strong>「ナレッジソースを追加」</strong> をクリック</li>
+          <li>「最近使用したアイテム」から <strong>分析に使いたいテーブルをすべて追加</strong></li>
+        </ol>
+        <div style="background:#EBF8FF; border-radius:8px; padding:12px 16px; margin-top:12px; border-left:4px solid #3182CE;">
+          <p style="font-size:0.85rem; color:#2A4365; margin:0;">複数のテーブルを追加することで、テーブル間の結合分析も可能になります。エージェントは他の人と共有できないため、各自で構築する必要があります。</p>
+        </div>
+      </div>
+
+      <div class="step-box">
+        <h3><span class="step-number">7</span> Conversational Analytics で動作確認</h3>
+        <p>エージェント構築が完了したら、自然言語で質問してみましょう:</p>
+        <pre><code>どんなテーブルがありますか？
+売上データの件数は？
+店舗は何店舗ある？</code></pre>
+        <p style="margin-top:8px; font-size:0.85rem; color:#64748B;">結果が出たら周りの人と見比べてみてください。</p>
       </div>
 
       <h3 style="font-size:1.1rem; font-weight:800; color:var(--deep-sea); margin-top:40px; margin-bottom:16px;">セットアップ完了チェックリスト</h3>
@@ -640,10 +679,10 @@ SELECT 'shop_item_daily_performance', COUNT(*) FROM `meetup8.shop_item_daily_per
         <li>Google Cloud プロジェクトを作成した</li>
         <li>課金アカウントを設定した（バウチャーまたは無料トライアル）</li>
         <li>BigQuery API を有効化した</li>
-        <li>Analytics Hub で 5 つのリスティングをサブスクライブした</li>
-        <li><code>meetup8</code> データセットに 5 つのテーブルが表示されている</li>
-        <li>テストクエリが正常に実行できた</li>
-        <li>Gemini in BigQuery が有効になっている</li>
+        <li>Analytics Hub で 9 つのリスティングをサブスクライブした</li>
+        <li>9テーブルすべてに SELECT 1 を実行した</li>
+        <li>Conversational Analytics エージェントを構築した</li>
+        <li>自然言語で質問して結果が返った</li>
       </ul>
     </div>
   </section>
