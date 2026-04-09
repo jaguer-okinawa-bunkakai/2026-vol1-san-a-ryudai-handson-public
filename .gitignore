@@ -1,0 +1,13 @@
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
