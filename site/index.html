@@ -198,8 +198,10 @@
       <h2 class="section-title">講義スライド</h2>
       <p class="section-desc">セットアップ手順からハンズオン、チーム課題まで。<a href="marp/handson.html" target="_blank" style="font-weight:700;">全画面で開く</a></p>
 
-      <div style="position:relative; width:100%; padding-top:56.25%; border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-        <iframe src="marp/handson.html" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="screen-wake-lock" loading="lazy"></iframe>
+      <div id="slide-wrap" style="position:relative; width:100%; padding-top:56.25%; border-radius:12px; overflow:hidden; border:1px solid #E2E8F0; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+        <iframe id="slide-frame" src="marp/handson.html" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="screen-wake-lock" loading="lazy"></iframe>
+        <button onclick="navSlide(-1)" style="position:absolute;left:0;top:0;width:25%;height:100%;background:none;border:none;cursor:w-resize;z-index:2;" aria-label="前へ"></button>
+        <button onclick="navSlide(1)" style="position:absolute;right:0;top:0;width:75%;height:100%;background:none;border:none;cursor:e-resize;z-index:2;" aria-label="次へ"></button>
       </div>
     </div>
   </section>
@@ -328,6 +330,15 @@
       var btn = document.getElementById('scrollTop');
       if (window.scrollY > 300) { btn.classList.add('visible'); } else { btn.classList.remove('visible'); }
     });
+    function navSlide(dir) {
+      var f = document.getElementById('slide-frame');
+      try {
+        var key = dir > 0 ? 'ArrowRight' : 'ArrowLeft';
+        f.contentWindow.document.dispatchEvent(new KeyboardEvent('keydown', {key: key, bubbles: true}));
+      } catch(e) {
+        f.contentWindow.postMessage(JSON.stringify({method: dir > 0 ? 'next' : 'prev'}), '*');
+      }
+    }
   </script>
 </body>
 </html>
