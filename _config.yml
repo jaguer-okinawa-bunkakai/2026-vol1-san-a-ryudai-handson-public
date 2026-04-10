@@ -1,0 +1,5 @@
+title: "Jagu'e'r 沖縄分科会 Meetup #8"
+description: "ハンズオン資料"
+baseurl: "/2026-vol1-san-a-ryudai-handson-public"
+exclude:
+  - docs/handson/answers.md
