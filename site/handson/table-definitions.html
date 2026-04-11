@@ -454,6 +454,140 @@ WHERE basket_total > 0
 ORDER BY basket_total DESC
 LIMIT 10;
 \`\`\`
+
+---
+
+## 4. 神マート（mart_god）
+
+> **全課題対応の統合マート** — \\\`customer_sales_details\\\` + \\\`food_item_master\\\` を事前結合・集約し、旧盆・台風等のイベントフラグを付与。GROUP BYだけで全6課題に回答可能。
+
+| 項目 | 値 |
+|------|---|
+| 件数 | 約23,614,216件 |
+| 粒度 | 日付 × 店舗 × 商品（1日1店舗1商品につき1レコード） |
+| 期間 | 2025-08-01 〜 2025-09-30 |
+
+### カラム定義
+
+#### 日付・カレンダー
+
+| 項番 | 物理名 | 論理名 | 型 | 備考 |
+|------|--------|--------|-----|------|
+| 1 | \\\`usage_date\\\` | 利用年月日 | \\\`STRING\\\` | \\\`YYYYMMDD\\\` 形式。他テーブルと同じフィルタ形式（例: \\\`usage_date = '20250906'\\\`） |
+| 2 | \\\`month_num\\\` | 月 | \\\`INT64\\\` | 8 or 9 |
+| 3 | \\\`month_label\\\` | 月ラベル | \\\`STRING\\\` | \\\`8月\\\` / \\\`9月\\\` |
+| 4 | \\\`week_num\\\` | ISO週番号 | \\\`INT64\\\` | |
+| 5 | \\\`dow_number\\\` | 曜日番号 | \\\`INT64\\\` | 1=日, 2=月, ..., 7=土 |
+| 6 | \\\`dow_ja\\\` | 曜日 | \\\`STRING\\\` | 日/月/火/水/木/金/土 |
+| 7 | \\\`is_weekend\\\` | 土日フラグ | \\\`BOOL\\\` | |
+
+#### イベントフラグ
+
+| 項番 | 物理名 | 論理名 | 型 | 備考 |
+|------|--------|--------|-----|------|
+| 8 | \\\`obon_label\\\` | 旧盆ラベル | \\\`STRING\\\` | ウンケー/ナカヌヒー/ウークイ等。該当日以外は NULL |
+| 9 | \\\`is_obon\\\` | 旧盆期間フラグ | \\\`BOOL\\\` | 9/4〜9/6 |
+| 10 | \\\`is_obon_extended\\\` | 旧盆拡張期間フラグ | \\\`BOOL\\\` | 9/3〜9/7（前日・翌日含む） |
+| 11 | \\\`typhoon_label\\\` | 台風ラベル | \\\`STRING\\\` | 台風前日/直撃日/台風明け。該当日以外は NULL |
+| 12 | \\\`is_typhoon_period\\\` | 台風期間フラグ | \\\`BOOL\\\` | 8/18〜8/20 |
+| 13 | \\\`period_type\\\` | 期間区分 | \\\`STRING\\\` | \\\`通常\\\` / \\\`旧盆\\\` / \\\`台風\\\` |
+
+#### 店舗・商品
+
+| 項番 | 物理名 | 論理名 | 型 | 備考 |
+|------|--------|--------|-----|------|
+| 14 | \\\`store_name\\\` | 店舗名 | \\\`STRING\\\` | |
+| 15 | \\\`product_code\\\` | 商品コード | \\\`STRING\\\` | food_item_master と結合済み |
+| 16 | \\\`product_name\\\` | 商品名 | \\\`STRING\\\` | NULL の場合は未登録商品 |
+| 17 | \\\`department_code\\\` | 部門コード | \\\`INT64\\\` | |
+| 18 | \\\`mid_category\\\` | 中分類 | \\\`INT64\\\` | |
+| 19 | \\\`sub_category\\\` | 小分類 | \\\`INT64\\\` | |
+| 20 | \\\`brand_name\\\` | ブランド名 | \\\`STRING\\\` | |
+
+#### 指標
+
+| 項番 | 物理名 | 論理名 | 型 | 備考 |
+|------|--------|--------|-----|------|
+| 21 | \\\`transaction_count\\\` | 取引数 | \\\`INT64\\\` | |
+| 22 | \\\`total_quantity\\\` | 販売数量 | \\\`INT64\\\` | |
+| 23 | \\\`total_sales\\\` | 売上金額（税抜） | \\\`INT64\\\` | 分析ではこちらを使用 |
+| 24 | \\\`tax_included_amount\\\` | 売上金額（税込） | \\\`INT64\\\` | |
+| 25 | \\\`unique_buyers\\\` | ユニーク購入者数 | \\\`INT64\\\` | |
+
+### 課題別クエリ例
+
+\\\`\\\`\\\`sql
+-- 共通課題: 売上が一番高かった日はいつ？
+SELECT
+  usage_date,
+  SUM(total_sales) AS 日別売上合計
+FROM \\\`{自分のプロジェクトID}.sana_ryudai_handson.mart_god\\\`
+GROUP BY usage_date
+ORDER BY 日別売上合計 DESC
+LIMIT 10;
+\\\`\\\`\\\`
+
+\\\`\\\`\\\`sql
+-- Q1: 旧盆（9/4〜9/6）に売れた商品 TOP20
+SELECT
+  product_name AS 商品名,
+  SUM(total_sales) AS 旧盆売上合計,
+  SUM(total_quantity) AS 販売数量
+FROM \\\`{自分のプロジェクトID}.sana_ryudai_handson.mart_god\\\`
+WHERE is_obon = TRUE
+  AND product_name IS NOT NULL
+GROUP BY product_name
+ORDER BY 旧盆売上合計 DESC
+LIMIT 20;
+\\\`\\\`\\\`
+
+\\\`\\\`\\\`sql
+-- Q2: 曜日別の平均売上（旧盆・台風除外）
+WITH daily AS (
+  SELECT usage_date, dow_ja, dow_number, SUM(total_sales) AS daily_sales
+  FROM \\\`{自分のプロジェクトID}.sana_ryudai_handson.mart_god\\\`
+  WHERE period_type = '通常'
+  GROUP BY usage_date, dow_ja, dow_number
+)
+SELECT dow_ja AS 曜日, ROUND(AVG(daily_sales)) AS 平均売上
+FROM daily
+GROUP BY dow_ja, dow_number
+ORDER BY dow_number;
+\\\`\\\`\\\`
+
+\\\`\\\`\\\`sql
+-- Q4: 台風前後の売れ筋商品比較
+SELECT
+  usage_date AS 日付,
+  typhoon_label AS 台風区分,
+  product_name AS 商品名,
+  SUM(total_quantity) AS 販売数量,
+  SUM(total_sales) AS 売上金額
+FROM \\\`{自分のプロジェクトID}.sana_ryudai_handson.mart_god\\\`
+WHERE is_typhoon_period = TRUE
+  AND product_name IS NOT NULL
+GROUP BY usage_date, typhoon_label, product_name
+ORDER BY usage_date, 売上金額 DESC
+LIMIT 30;
+\\\`\\\`\\\`
+
+\\\`\\\`\\\`sql
+-- Q5: 旧盆の店舗別売上推移（4日間ある店舗を探す）
+SELECT
+  store_name AS 店舗名,
+  SUM(IF(usage_date = '20250904', total_sales, 0)) AS ウンケー,
+  SUM(IF(usage_date = '20250905', total_sales, 0)) AS ナカヌヒー,
+  SUM(IF(usage_date = '20250906', total_sales, 0)) AS ウークイ,
+  SUM(IF(usage_date = '20250907', total_sales, 0)) AS 翌日,
+  ROUND(SAFE_DIVIDE(
+    SUM(IF(usage_date = '20250907', total_sales, 0)),
+    SUM(IF(usage_date = '20250906', total_sales, 0))
+  ) * 100, 1) AS 翌日維持率
+FROM \\\`{自分のプロジェクトID}.sana_ryudai_handson.mart_god\\\`
+WHERE is_obon_extended = TRUE
+GROUP BY store_name
+ORDER BY 翌日維持率 DESC;
+\\\`\\\`\\\`
 `;
 document.getElementById("content").innerHTML = marked.parse(MD);
 </script>
