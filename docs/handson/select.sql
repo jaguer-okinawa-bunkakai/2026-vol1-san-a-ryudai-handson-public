@@ -1,0 +1,9 @@
+SELECT 1 FROM `sana_ryudai_handson.card_master` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.customer_master` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.customer_sales_details` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.food_item_master` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_basket_analysis` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_customer_summary` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_daily_sales` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.mart_product_ranking` LIMIT 1;
+SELECT 1 FROM `sana_ryudai_handson.shop_item_daily_performance` LIMIT 1;
