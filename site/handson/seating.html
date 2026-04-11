@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>座席表・配置図 | Jagu'e'r 沖縄分科会</title>
+<link rel="icon" href="data:,">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #FAFCFF; color: #2D3748; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  .back-link { margin-bottom: 24px; }
+  .back-link a { color: #0077B6; text-decoration: none; font-size: 0.9rem; }
+  .back-link a:hover { text-decoration: underline; }
+  h1 { color: #023E8A; font-size: 1.6rem; margin-bottom: 8px; }
+  .subtitle { color: #64748B; font-size: 0.9rem; margin-bottom: 24px; }
+  .note { background: #FFF8E1; border-left: 4px solid #F5A623; padding: 10px 16px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 0.85rem; color: #6B5900; }
+
+  /* Room Layout */
+  .room-wrapper { background: #fff; border-radius: 14px; padding: 24px; border: 1px solid #E2E8F0; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 32px; overflow-x: auto; }
+  .room {
+    display: grid;
+    grid-template-columns: 60px 1fr 40px 1fr 60px;
+    grid-template-rows: auto;
+    gap: 8px;
+    min-width: 700px;
+    padding: 16px;
+    background: #F8FAFC;
+    border-radius: 10px;
+    border: 2px solid #CBD5E0;
+    position: relative;
+  }
+  .wall-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: #94A3B8;
+    letter-spacing: 0.2em;
+  }
+  .wall-left { grid-column: 1; grid-row: 1 / span 13; background: #E2E8F0; border-radius: 6px; }
+  .entrance-top { grid-column: 5; grid-row: 1; background: #DBEAFE; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #3B82F6; padding: 6px; }
+  .entrance-bottom { grid-column: 5; grid-row: 12; background: #DBEAFE; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #3B82F6; padding: 6px; }
+  .stage-area {
+    grid-column: 5; grid-row: 4 / span 7;
+    background: linear-gradient(135deg, #EBF5FF, #DBEAFE);
+    border: 2px dashed #93C5FD; border-radius: 8px;
+    writing-mode: vertical-rl; text-orientation: mixed;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700; color: #2563EB;
+    letter-spacing: 0.15em;
+  }
+  .ops-area {
+    grid-column: 1; grid-row: 3 / span 8;
+    background: #F0FDF4; border: 2px dashed #86EFAC; border-radius: 8px;
+    writing-mode: vertical-rl; text-orientation: mixed;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: #16A34A;
+    letter-spacing: 0.1em;
+    padding: 4px;
+  }
+
+  .desk {
+    border-radius: 10px; padding: 10px 12px;
+    border: 2px solid; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .desk:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .desk-label { font-size: 1.1rem; font-weight: 900; margin-bottom: 2px; }
+  .desk-ta { font-size: 0.68rem; color: #0077B6; font-weight: 600; }
+  .desk-members { font-size: 0.72rem; color: #475569; margin-top: 4px; line-height: 1.5; }
+  .desk-question { font-size: 0.65rem; font-weight: 600; margin-top: 4px; padding: 2px 8px; border-radius: 100px; display: inline-block; }
+
+  /* Team colors */
+  .team-a { background: #FFF1F2; border-color: #FDA4AF; }
+  .team-a .desk-label { color: #E11D48; }
+  .team-a .desk-question { background: #FFE4E6; color: #BE123C; }
+  .team-b { background: #FFF7ED; border-color: #FDBA74; }
+  .team-b .desk-label { color: #EA580C; }
+  .team-b .desk-question { background: #FFEDD5; color: #C2410C; }
+  .team-c { background: #FEFCE8; border-color: #FDE047; }
+  .team-c .desk-label { color: #CA8A04; }
+  .team-c .desk-question { background: #FEF9C3; color: #A16207; }
+  .team-d { background: #F0FDF4; border-color: #86EFAC; }
+  .team-d .desk-label { color: #16A34A; }
+  .team-d .desk-question { background: #DCFCE7; color: #15803D; }
+  .team-e { background: #ECFEFF; border-color: #67E8F9; }
+  .team-e .desk-label { color: #0891B2; }
+  .team-e .desk-question { background: #CFFAFE; color: #0E7490; }
+  .team-f { background: #EFF6FF; border-color: #93C5FD; }
+  .team-f .desk-label { color: #2563EB; }
+  .team-f .desk-question { background: #DBEAFE; color: #1D4ED8; }
+  .team-g { background: #F5F3FF; border-color: #C4B5FD; }
+  .team-g .desk-label { color: #7C3AED; }
+  .team-g .desk-question { background: #EDE9FE; color: #6D28D9; }
+  .team-h { background: #FDF4FF; border-color: #E879F9; }
+  .team-h .desk-label { color: #C026D3; }
+  .team-h .desk-question { background: #FAE8FF; color: #A21CAF; }
+  .team-i { background: #FFF1F2; border-color: #FCA5A5; }
+  .team-i .desk-label { color: #DC2626; }
+  .team-i .desk-question { background: #FEE2E2; color: #B91C1C; }
+  .team-j { background: #F0FDFA; border-color: #5EEAD4; }
+  .team-j .desk-label { color: #0D9488; }
+  .team-j .desk-question { background: #CCFBF1; color: #0F766E; }
+  .team-k { background: #FFFBEB; border-color: #FCD34D; }
+  .team-k .desk-label { color: #D97706; }
+  .team-k .desk-question { background: #FEF3C7; color: #B45309; }
+  .team-l { background: #F0F9FF; border-color: #7DD3FC; }
+  .team-l .desk-label { color: #0284C7; }
+  .team-l .desk-question { background: #E0F2FE; color: #0369A1; }
+
+  .spacer { height: 4px; }
+
+  /* Seating list */
+  .seating-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .team-card { background: #fff; border-radius: 10px; padding: 16px; border: 2px solid #E2E8F0; }
+  .team-card h3 { font-size: 1rem; margin-bottom: 6px; }
+  .team-card .ta-label { font-size: 0.75rem; color: #0077B6; font-weight: 600; margin-bottom: 6px; }
+  .team-card ul { list-style: none; padding: 0; }
+  .team-card li { font-size: 0.85rem; padding: 3px 0; border-bottom: 1px solid #F1F5F9; }
+  .team-card li:last-child { border-bottom: none; }
+
+  .section-title { color: #023E8A; font-size: 1.3rem; font-weight: 700; margin: 32px 0 16px; }
+
+  @media (max-width: 768px) {
+    .container { padding: 24px 12px; }
+    .room { min-width: 600px; font-size: 0.9em; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+  <div class="back-link"><a href="../">&larr; メインページへ戻る</a></div>
+  <h1>座席表・配置図</h1>
+  <p class="subtitle">琉球大学 工学部 教室レイアウト</p>
+  <div class="note">
+    TA名は<span style="color:#0077B6; font-weight:700;">青字</span>で表示しています。
+  </div>
+
+  <!-- Room Layout -->
+  <div class="room-wrapper">
+    <div class="room">
+      <!-- Left wall (window) -->
+      <div class="wall-left wall-label">窓 側</div>
+
+      <!-- Entrance top right -->
+      <div class="entrance-top">入口</div>
+
+      <!-- Row 1: G and A -->
+      <div class="desk team-g" style="grid-column:2; grid-row:1;" onclick="scrollToTeam('G')">
+        <div class="desk-label">G</div>
+        <div class="desk-ta">TA: 神谷</div>
+        <div class="desk-members">山根, 伊礼, 大濵, 親川, KIM</div>
+        <div class="desk-question">Q5</div>
+      </div>
+      <div class="desk team-a" style="grid-column:4; grid-row:1;" onclick="scrollToTeam('A')">
+        <div class="desk-label">A</div>
+        <div class="desk-ta">TA: 神谷</div>
+        <div class="desk-members">長野, 湯浅, 西島, 松隈</div>
+        <div class="desk-question">Q2</div>
+      </div>
+
+      <!-- Row 2: H and B -->
+      <div class="desk team-h" style="grid-column:2; grid-row:3;" onclick="scrollToTeam('H')">
+        <div class="desk-label">H</div>
+        <div class="desk-ta">TA: 南海</div>
+        <div class="desk-members">宮里, 髙橋, 宮城李, 清水, 玉城良</div>
+        <div class="desk-question">Q4</div>
+      </div>
+      <div class="desk team-b" style="grid-column:4; grid-row:3;" onclick="scrollToTeam('B')">
+        <div class="desk-label">B</div>
+        <div class="desk-ta">TA: 玉城</div>
+        <div class="desk-members">村田, 高橋, 赤嶺, 宮良</div>
+        <div class="desk-question">Q3</div>
+      </div>
+
+      <!-- Operations area -->
+      <div class="ops-area">運営メンバー</div>
+
+      <!-- Stage area -->
+      <div class="stage-area">登壇スペース</div>
+
+      <!-- Row 3: I and C -->
+      <div class="desk team-i" style="grid-column:2; grid-row:5;" onclick="scrollToTeam('I')">
+        <div class="desk-label">I</div>
+        <div class="desk-ta">TA: 山根</div>
+        <div class="desk-members">宮川, 島田, 山脇, 丸山</div>
+        <div class="desk-question">Q2</div>
+      </div>
+      <div class="desk team-c" style="grid-column:4; grid-row:5;" onclick="scrollToTeam('C')">
+        <div class="desk-label">C</div>
+        <div class="desk-ta">TA: 玉城</div>
+        <div class="desk-members">泉水, 村岡, 二瀬, ネブレス</div>
+        <div class="desk-question">Q5</div>
+      </div>
+
+      <!-- Row 4: J and D -->
+      <div class="desk team-j" style="grid-column:2; grid-row:7;" onclick="scrollToTeam('J')">
+        <div class="desk-label">J</div>
+        <div class="desk-ta">TA: 嘉人</div>
+        <div class="desk-members">小山内, 高原, 岡崎, 星</div>
+        <div class="desk-question">Q4</div>
+      </div>
+      <div class="desk team-d" style="grid-column:4; grid-row:7;" onclick="scrollToTeam('D')">
+        <div class="desk-label">D</div>
+        <div class="desk-ta">TA: 榮野川</div>
+        <div class="desk-members">中村, 村木, 外間, イアン</div>
+        <div class="desk-question">Q3</div>
+      </div>
+
+      <!-- Row 5: K and E -->
+      <div class="desk team-k" style="grid-column:2; grid-row:9;" onclick="scrollToTeam('K')">
+        <div class="desk-label">K</div>
+        <div class="desk-ta">TA: 周悟</div>
+        <div class="desk-members">金城ま, 當間, 神谷嘉, 島村</div>
+        <div class="desk-question">Q2</div>
+      </div>
+      <div class="desk team-e" style="grid-column:4; grid-row:9;" onclick="scrollToTeam('E')">
+        <div class="desk-label">E</div>
+        <div class="desk-ta">TA: 秋山</div>
+        <div class="desk-members">安里南, 鈴木, 伊良皆, 伊是名</div>
+        <div class="desk-question">Q4</div>
+      </div>
+
+      <!-- Row 6: L and F -->
+      <div class="desk team-l" style="grid-column:2; grid-row:11;" onclick="scrollToTeam('L')">
+        <div class="desk-label">L</div>
+        <div class="desk-ta">TA: 赤嶺</div>
+        <div class="desk-members">宮城祥, 平野桜, 平野敬, Bidur, 金城琉</div>
+        <div class="desk-question">Q3</div>
+      </div>
+      <div class="desk team-f" style="grid-column:4; grid-row:11;" onclick="scrollToTeam('F')">
+        <div class="desk-label">F</div>
+        <div class="desk-ta">TA: 秋山</div>
+        <div class="desk-members">新垣, 安里周, 上野, 小波津</div>
+        <div class="desk-question">Q5</div>
+      </div>
+
+      <!-- Entrance bottom right -->
+      <div class="entrance-bottom" style="grid-column:5; grid-row:11;">入口</div>
+    </div>
+  </div>
+
+  <!-- Team member list -->
+  <h2 class="section-title">チーム別メンバー一覧</h2>
+
+  <div class="seating-grid">
+    <div class="team-card team-a" id="team-A">
+      <h3 style="color:#E11D48;">Team A</h3>
+      <div class="ta-label">TA: 神谷 ／ 課題: Q2</div>
+      <ul>
+        <li>長野 虹</li>
+        <li>湯浅 遥太</li>
+        <li>西島 昌太</li>
+        <li>松隈 詠美</li>
+      </ul>
+    </div>
+    <div class="team-card team-b" id="team-B">
+      <h3 style="color:#EA580C;">Team B</h3>
+      <div class="ta-label">TA: 玉城 ／ 課題: Q3</div>
+      <ul>
+        <li>村田 靖拓</li>
+        <li>高橋 航海</li>
+        <li>赤嶺 紘基</li>
+        <li>宮良 一輝</li>
+      </ul>
+    </div>
+    <div class="team-card team-c" id="team-C">
+      <h3 style="color:#CA8A04;">Team C</h3>
+      <div class="ta-label">TA: 玉城 ／ 課題: Q5</div>
+      <ul>
+        <li>泉水 朝匡</li>
+        <li>村岡 一諒</li>
+        <li>二瀬 創</li>
+        <li>ネブレスパウリンデュマス</li>
+      </ul>
+    </div>
+    <div class="team-card team-d" id="team-D">
+      <h3 style="color:#16A34A;">Team D</h3>
+      <div class="ta-label">TA: 榮野川 ／ 課題: Q3</div>
+      <ul>
+        <li>中村 響</li>
+        <li>村木 志成</li>
+        <li>外間 悠稀</li>
+        <li>イアン</li>
+      </ul>
+    </div>
+    <div class="team-card team-e" id="team-E">
+      <h3 style="color:#0891B2;">Team E</h3>
+      <div class="ta-label">TA: 秋山 ／ 課題: Q4</div>
+      <ul>
+        <li>安里 南海</li>
+        <li>鈴木 千恵美</li>
+        <li>伊良皆 慧斗</li>
+        <li>伊是名 将</li>
+      </ul>
+    </div>
+    <div class="team-card team-f" id="team-F">
+      <h3 style="color:#2563EB;">Team F</h3>
+      <div class="ta-label">TA: 秋山 ／ 課題: Q5</div>
+      <ul>
+        <li>新垣 浩明</li>
+        <li>安里 周悟</li>
+        <li>上野 亜希</li>
+        <li>小波津 海渡</li>
+      </ul>
+    </div>
+    <div class="team-card team-g" id="team-G">
+      <h3 style="color:#7C3AED;">Team G</h3>
+      <div class="ta-label">TA: 神谷 ／ 課題: Q5</div>
+      <ul>
+        <li>山根 智臣</li>
+        <li>伊礼 絵利香</li>
+        <li>大濵 長真</li>
+        <li>親川 椋</li>
+        <li>KIM HYUNWOO</li>
+      </ul>
+    </div>
+    <div class="team-card team-h" id="team-H">
+      <h3 style="color:#C026D3;">Team H</h3>
+      <div class="ta-label">TA: 南海 ／ 課題: Q4</div>
+      <ul>
+        <li>宮里 治</li>
+        <li>髙橋 颯汰</li>
+        <li>宮城 李空</li>
+        <li>清水 賢</li>
+        <li>玉城 良樹</li>
+      </ul>
+    </div>
+    <div class="team-card team-i" id="team-I">
+      <h3 style="color:#DC2626;">Team I</h3>
+      <div class="ta-label">TA: 山根 ／ 課題: Q2</div>
+      <ul>
+        <li>宮川 裕勝</li>
+        <li>島田 紀明</li>
+        <li>山脇 大輝</li>
+        <li>丸山 海理</li>
+      </ul>
+    </div>
+    <div class="team-card team-j" id="team-J">
+      <h3 style="color:#0D9488;">Team J</h3>
+      <div class="ta-label">TA: 嘉人 ／ 課題: Q4</div>
+      <ul>
+        <li>小山内 大輔</li>
+        <li>高原 元来</li>
+        <li>岡崎 威生</li>
+        <li>星 翔大</li>
+      </ul>
+    </div>
+    <div class="team-card team-k" id="team-K">
+      <h3 style="color:#D97706;">Team K</h3>
+      <div class="ta-label">TA: 周悟 ／ 課題: Q2</div>
+      <ul>
+        <li>金城 まり奈</li>
+        <li>當間 愛晃</li>
+        <li>神谷 嘉人</li>
+        <li>島村 美恵子</li>
+      </ul>
+    </div>
+    <div class="team-card team-l" id="team-L">
+      <h3 style="color:#0284C7;">Team L</h3>
+      <div class="ta-label">TA: 赤嶺 ／ 課題: Q3</div>
+      <ul>
+        <li>宮城 祥</li>
+        <li>平野 桜子</li>
+        <li>平野 敬大</li>
+        <li>Bidur Nepali</li>
+        <li>金城 琉太郎</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:24px; padding:16px; background:#F0FDF4; border-radius:10px; border:1px solid #BBF7D0;">
+    <h3 style="color:#16A34A; font-size:0.95rem; margin-bottom:8px;">運営メンバー (Z)</h3>
+    <p style="font-size:0.85rem; color:#475569;">神谷乗治 / 栄野川隼人 / 山時浩一郎 / 関谷友明 / 立津慶幸 / 佐々木愛美 / 玉城一磨 / 秋山解</p>
+  </div>
+</div>
+
+<script>
+function scrollToTeam(team) {
+  var el = document.getElementById('team-' + team);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.boxShadow = '0 0 0 3px #3B82F6';
+    setTimeout(function() { el.style.boxShadow = ''; }, 2000);
+  }
+}
+</script>
+</body>
+</html>
